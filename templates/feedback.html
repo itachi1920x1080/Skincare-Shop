@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Feedback - Darling Skincare{% endblock %}
+
+{% block content %}
+<section class="auth-container">
+    <div class="auth-form" id="feedbackForm" data-aos="fade-up">
+        <h2>We Value Your Feedback</h2>
+        <p style="margin-bottom: 25px; opacity: 0.9;">
+            Tell us about your experience or suggest a product!
+        </p>
+        
+        <form action="{{ url_for('submit_feedback') }}" method="POST">
+            <div class="input-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" placeholder="Your Name" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="id" name="email" placeholder="you@example.com" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="message">Your Message</label>
+                <textarea id="message" name="message" rows="5" 
+                    style="width: 100%; border-radius: 10px; padding: 12px; 
+                           background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); 
+                           color: white; outline: none; font-family: inherit;" 
+                    placeholder="How can we improve?" required></textarea>
+            </div>
+            
+            <button type="submit">SUBMIT FEEDBACK</button>
+        </form>
+    </div>
+</section>
+{% endblock %}

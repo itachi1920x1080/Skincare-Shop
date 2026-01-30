@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Darling Skincare{% endblock %}
+
+{% block content %}
+<section class="hero-section">
+    <div class="hero-text" data-aos="fade-up">
+        <h1>Unlock Your Skin's Natural Radiance</h1>
+        <p>Discover our curated collection of clean, effective skincare products.</p>
+        <a href="{{ url_for('products') }}" class="cta-button">Shop Now</a>
+    </div>
+    <div class="hero-image" data-aos="zoom-in">
+        <img src="https://i.pinimg.com/originals/aa/b7/52/aab7523f5c40f75e20a2749e271f863c.jpg" alt="Skincare">
+    </div>
+</section>
+
+<div id="products-scroll">
+    {% include "_product_list.html" %}
+</div>
+{% endblock %}

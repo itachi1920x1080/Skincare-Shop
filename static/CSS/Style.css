@@ -1,0 +1,840 @@
+/* ==================================== */
+/* 1. GLOBAL & ROOT SETTINGS */
+/* ==================================== */
+:root {
+    --primary-pink: #d1787c;
+    --accent-pink: #e5989b;
+    --light-pink: rgb(255, 192, 192);
+    --bg-cream: #f7f3f0;
+    --text-dark: #333;
+    --white: #ffffff;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    background-color: var(--bg-cream);
+    color: var(--text-dark);
+    overflow-x: hidden;
+}
+
+a {
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+/* ==================================== */
+/* 2. HEADER & NAVIGATION (base.html) */
+/* ==================================== */
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 50px;
+    background-color: rgba(216, 112, 147, 0.9);
+    backdrop-filter: blur(10px);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: pulse 2s infinite;
+}
+
+.logo-text {
+    font-size: 1.8em;
+    color: var(--light-pink);
+}
+
+.logo-image {
+    height: 50px;
+    border-radius: 25px;
+}
+
+.navlinks ul {
+    margin: 0;
+    padding: 0;
+    gap: 10px;
+    list-style: none;
+    display: flex;
+    gap: 20px;
+}
+
+.navlinks a {
+    color: var(--white);
+    font-size: 18px;
+    padding: 10px 15px;
+}
+
+.navlinks a:hover {
+    color: var(--accent-pink);
+}
+
+/* ==================================== */
+/* 3. HERO SECTION (index.html) */
+/* ==================================== */
+.hero-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 100px 50px;
+    background: linear-gradient(135deg, #eaacac9a, #8d838398);
+    gap: 50px;
+    min-height: 60vh;
+}
+
+.hero-text h1 {
+    font-size: 3.5rem;
+    color: var(--accent-pink);
+    margin-bottom: 20px;
+}
+
+.cta-button {
+    background-color: var(--accent-pink);
+    color: var(--white);
+    padding: 15px 35px;
+    border-radius: 50px;
+    box-shadow: 0 4px 15px rgba(229, 152, 155, 0.4);
+}
+
+.hero-image img {
+    width: 100%;
+    max-width: 600px;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
+
+/* ==================================== */
+/* 4. PRODUCT GRID (products.html) */
+/* ==================================== */
+.products-section {
+    padding: 80px 10%;
+    text-align: center;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+}
+
+.product-card {
+    background: var(--white);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-10px);
+}
+
+.product-card img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.add-to-cart {
+    background-color: var(--primary-pink);
+    color: var(--white);
+    border: none;
+    padding: 12px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    margin-top: 15px;
+}
+/* ==================================== */
+/* PRODUCTS PAGE WRAPPER */
+/* ==================================== */
+
+.products-container {
+    padding: 60px 10%;           /* Large side padding for a luxury feel */
+    background: linear-gradient(180deg, #f7f3f0 0%, #ffffff 100%);
+    min-height: 80vh;           /* Ensures footer stays down on empty pages */
+    text-align: center;
+}
+
+/* 1. Header Title for Products */
+.section-title {
+    font-size: 2.8em;
+    margin-bottom: 50px;
+    color: #ffffff;
+    background: rgba(216, 112, 147, 0.877); /* Reusing your brand pink */
+    padding: 15px 40px;
+    display: inline-block;
+    border-radius: 50px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    letter-spacing: 1px;
+}
+
+/* 2. The Grid Layout */
+.product-grid {
+    display: grid;
+    /* Responsive columns: at least 280px wide, fills the space */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+    gap: 40px;                  /* Generous space between cards */
+    margin-bottom: 50px;
+}
+
+/* 3. The Product Card Aesthetic */
+.product-card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 20px;
+    border: 1px solid rgba(216, 112, 147, 0.1);
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.product-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(209, 120, 124, 0.15);
+    border-color: #e5989b;
+}
+
+/* 4. Product Image Support */
+.product-img {
+    width: 100%;
+    height: 300px;
+    border-radius: 15px;
+    overflow: hidden;
+    margin-bottom: 15px;
+}
+
+.product-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures image fills space without stretching */
+    transition: transform 0.6s ease;
+}
+
+.product-card:hover .product-img img {
+    transform: scale(1.1); /* Zoom effect on hover */
+}
+
+/* 5. Responsive Adjustments */
+@media (max-width: 768px) {
+    .products-container {
+        padding: 40px 5%; /* Less padding on small screens */
+    }
+    
+    .section-title {
+        font-size: 2em;
+    }
+}
+/* ==================================== */
+/* 5. LOGIN FORM (login.html) */
+/* ==================================== */
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+}
+
+.auth-form {
+    background-color: var(--primary-pink);
+    padding: 40px;
+    border-radius: 15px;
+    width: 100%;
+    max-width: 400px;
+    color: var(--white);
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px;
+    margin-top: 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.1);
+    color: var(--white);
+}
+/* ==================================== */
+/* AUTHENTICATION / LOGIN STYLES */
+/* ==================================== */
+
+/* 1. Container - Centers the form on the screen */
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 85vh; /* Adjusted to sit nicely between header and footer */
+    background: linear-gradient(135deg, #f7f3f0 0%, #eaacac4a 100%);
+    padding: 20px;
+}
+
+/* 2. Form Card - The Glass Box */
+.auth-form {
+    background-color: rgba(209, 120, 124, 0.95); /* Your primary pink with slight transparency */
+    color: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.auth-form h2 {
+    font-size: 2em;
+    margin-bottom: 25px;
+    color: #fff;
+    letter-spacing: 1px;
+}
+
+/* 3. Input Groups */
+.input-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.15);
+    color: white;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    box-sizing: border-box; /* Crucial for width: 100% */
+}
+
+.input-group input:focus {
+    outline: none;
+    background-color: rgba(255, 255, 255, 0.25);
+    border-color: #fff;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+/* Placeholder color styling */
+.input-group input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* 4. Login Button */
+.auth-form button {
+    width: 100%;
+    padding: 14px;
+    background-color: #fff;
+    color: #d1787c;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.3s ease;
+    margin-top: 10px;
+}
+
+.auth-form button:hover {
+    background-color: #f7f3f0;
+    transform: scale(1.02);
+}
+
+/* 5. Bottom Links (Register / Forget PW) */
+.toggle-form {
+    margin-top: 20px;
+    font-size: 0.9rem;
+}
+
+.toggle-form a {
+    color: #fff;
+    text-decoration: underline;
+    font-weight: bold;
+    margin-left: 5px;
+}
+
+.toggle-form a:hover {
+    color: #f7f3f0;
+}
+
+/* 6. Error Messages (Support for Flask Flash messages) */
+.error-message {
+    background-color: rgba(255, 0, 0, 0.2);
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    font-size: 0.85rem;
+    display: none; /* JS will toggle this */
+}
+
+/* Responsive fix for smaller phones */
+@media (max-width: 480px) {
+    .auth-form {
+        padding: 30px 20px;
+    }
+}
+/* ==================================== */
+/* 6. RESPONSIVE MOBILE MENU */
+/* ==================================== */
+@media (max-width: 1024px) {
+    .menu-toggle { display: block; }
+    
+    .navlinks {
+        position: fixed;
+        top: 80px;
+        left: -100%; /* Hidden by default */
+        width: 100%;
+        height: calc(100vh - 80px);
+        background: var(--primary-pink);
+        transition: 0.4s;
+    }
+
+    .navlinks.expanded {
+        left: 0;
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+    }
+
+    .navlinks ul {
+        flex-direction: column;
+        align-items: center;
+        padding-top: 50px;
+    }
+}
+/* ==================================== */
+/* MAIN FOOTER STYLES */
+/* ==================================== */
+
+.main-footer {
+    background-color: #d1787c; /* Deep Rose base */
+    color: #ffffff;
+    padding-top: 60px;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* 1. Newsletter Section (Top of Footer) */
+.footer-top-newsletter {
+    padding-bottom: 50px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    margin-bottom: 40px;
+}
+
+.newsletter-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 0 20px;
+    gap: 30px;
+}
+
+.newsletter-text h2 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.newsletter-form {
+    display: flex;
+    gap: 10px;
+    flex-grow: 1;
+    max-width: 500px;
+}
+
+.newsletter-form input {
+    flex-grow: 1;
+    padding: 12px 20px;
+    border-radius: 50px;
+    border: none;
+    outline: none;
+}
+
+.newsletter-form button {
+    padding: 12px 30px;
+    background-color: #333; /* Dark contrast */
+    color: white;
+    border-radius: 50px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.newsletter-form button:hover {
+    background-color: #000;
+}
+
+/* 2. Middle Content (Logo & Links) */
+.footer-bottom-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    padding: 0 20px 40px;
+}
+
+.footer-logo-col {
+    flex: 1;
+    min-width: 250px;
+    margin-bottom: 30px;
+}
+
+.footer-links-group {
+    display: flex;
+    flex: 2;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 40px;
+}
+
+.footer-links h4 {
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+    position: relative;
+}
+
+.footer-links h4::after {
+    content: "";
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 30px;
+    height: 2px;
+    background-color: white;
+}
+
+.footer-links ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-links li {
+    margin-bottom: 10px;
+}
+
+.footer-links a {
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: normal;
+    font-size: 0.95rem;
+    transition: 0.3s ease;
+}
+
+.footer-links a:hover {
+    color: #333;
+    padding-left: 5px;
+}
+.footer-bottom-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between; /* Pushes logo left and links right */
+    flex-wrap: wrap;
+    padding: 40px 50px;
+    gap: 40px;
+}
+
+.footer-logo-col {
+    flex: 1;
+    min-width: 250px;
+}
+
+.footer-links-group {
+    display: flex;
+    flex: 2;
+    justify-content: space-around;
+    gap: 30px;
+}
+
+.footer-links h4 {
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+    padding-bottom: 5px;
+}
+
+/* 3. Social Media */
+.social-media {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.social-media a {
+    font-size: 1.5rem;
+    color: white;
+    transition: transform 0.3s;
+}
+
+.social-media a:hover {
+    transform: scale(1.2);
+}
+
+/* ==================================== */
+/* 1. GLOBAL & HEADER STYLES           */
+/* ==================================== */
+:root {
+    --primary-pink: #d1787c;
+    --accent-pink: #e5989b;
+    --bg-light: #fdf2f2;
+}
+
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 50px;
+    background-color: rgba(216, 112, 147, 0.9);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+/* ==================================== */
+/* 2. PRODUCT GRID & CARDS             */
+/* ==================================== */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    padding: 40px;
+}
+
+.product-card {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover { 
+    transform: translateY(-10px); 
+}
+
+.product-card img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+/* ==================================== */
+/* 3. MODAL CORE STYLES (Cart & QR)    */
+/* ==================================== */
+.cart-modal, .qr-modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.7);
+    justify-content: center;
+    align-items: center;
+}
+
+/* Layering: QR Pay must sit above Cart Modal */
+.cart-modal { z-index: 9999; }
+.qr-modal { 
+    z-index: 10000; 
+    background-color: rgba(0, 0, 0, 0.85); 
+}
+
+.cart-modal.visible, .qr-modal.visible { 
+    display: flex; 
+}
+
+/* Modal Content Box */
+.cart-content, .qr-content {
+    background: var(--bg-light);
+    padding: 30px;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 450px;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.close-btn {
+    position: absolute;
+    top: 15px; right: 20px;
+    cursor: pointer;
+    color: #888;
+    font-size: 1.5rem;
+    font-weight: bold;
+    transition: color 0.2s;
+}
+
+.close-btn:hover { color: var(--primary-pink); }
+
+/* ==================================== */
+/* 4. CART SPECIFIC STYLES             */
+/* ==================================== */
+.cart-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.remove-btn {
+    margin-left: auto;
+    cursor: pointer;
+    color: var(--accent-pink);
+    font-size: 1.2rem;
+}
+.qr-modal-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px; /* Adds space between text and image */
+}
+
+.qr-code-image {
+    width: 100%;
+    max-width: 280px; /* Prevents the QR from becoming too large */
+    height: auto;
+    border: 10px solid white; /* Creates a clean "paper" border */
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.total-display {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #333;
+    background: #fff;
+    padding: 8px 20px;
+    border-radius: 50px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.pay-now-btn {
+    width: 100%;
+    padding: 15px;
+    background: var(--primary-pink);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background 0.3s;
+}
+.copyright {
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.1); /* Subtle dark overlay on the pink footer */
+    padding: 20px;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.copyright p {
+    margin: 5px 0;
+}
+
+.copyright a {
+    color: white;
+    text-decoration: underline;
+    font-weight: normal;
+}
+
+.copyright a:hover {
+    color: var(--accent-pink);
+}
+
+.credit {
+    font-style: italic;
+    opacity: 0.7;
+    font-size: 0.75rem;
+}
+
+.pay-now-btn:hover { background: #b96065; }
+
+/* ==================================== */
+/* 5. QR PAYMENT SPECIFIC STYLES       */
+/* ==================================== */
+.qr-modal-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.qr-code-image {
+    width: 100%;
+    max-width: 280px;
+    height: auto;
+    margin: 20px 0;
+    border: 10px solid white; /* Paper-like border for bank QR */
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.qr-title {
+    color: var(--primary-pink);
+    font-size: 1.8rem;
+    margin: 0;
+}
+
+.scan-text {
+    font-style: italic;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.total-display {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #333;
+}
+
+/* 4. Copyright Section (Bottom) */
+.copyright {
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    font-size: 0.9rem;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+    .newsletter-content, .footer-bottom-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .footer-links h4::after {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .newsletter-form {
+        width: 100%;
+    }
+}
+/* ==================================== */
+/* 7. ANIMATIONS */
+/* ==================================== */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}

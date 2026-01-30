@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Darling Skincare{% endblock %}
+
+{% block content %}
+<main class="auth-container">
+    <div class="auth-form" id="authForm">
+        <h2>LOGIN</h2>
+        <form id="loginForm">
+            <div class="input-group">
+                <label>Email</label>
+                <input type="email" required>
+            </div>
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" required>
+            </div>
+            <button type="submit">LOGIN</button>
+        </form>
+    </div>
+</main>
+{% endblock %}
