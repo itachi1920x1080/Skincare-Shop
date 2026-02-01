@@ -6,16 +6,17 @@
 <main class="auth-container">
     <div class="auth-form" id="authForm">
         <h2>LOGIN</h2>
-        <form id="loginForm">
+        <form id="loginForm" action="/login" method="post">
             <div class="input-group">
-                <label>Email</label>
-                <input type="email" required>
+                <label for="email">Email ឬ Username</label>
+                <input type="email" id="email" name="email" placeholder="you@example.com" required>
             </div>
             <div class="input-group">
-                <label>Password</label>
-                <input type="password" required>
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="••••••••" required>
             </div>
-            <button type="submit">LOGIN</button>
+            <button type="submit" class="auth-btn">LOGIN</button>
+            <p>មិនទាន់មានគណនី? <a href="{{ url_for('register') }}">ចុះឈ្មោះ</a></p>
         </form>
     </div>
 </main>

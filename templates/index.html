@@ -14,7 +14,20 @@
     </div>
 </section>
 
-<div id="products-scroll">
-    {% include "_product_list.html" %}
-</div>
+<section class="products-section">
+    <div class="container">
+        <h2 class="section-title" data-aos="fade-up">Featured Products</h2>
+        
+        <div id="products-scroll">
+            {% include "_product_list.html" %}
+        </div>
+
+        <div class="view-all-container" data-aos="fade-up">
+            <a href="{{ url_for('products') }}" class="secondary-link">View All Products &rarr;</a>
+        </div>
+    </div>
+</section>
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>AOS.init();</script>
 {% endblock %}

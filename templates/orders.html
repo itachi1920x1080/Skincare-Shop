@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}My Orders - Darling Skincare{% endblock %}
+
+{% block content %}
+<div class="admin-container" style="max-width: 1000px; margin: 40px auto; padding: 20px;">
+    <h1 style="color: #6a0dad; margin-bottom: 30px;">My Order History</h1>
+    
+    {% if orders %}
+        {% include "_order_list.html" %}
+    {% else %}
+        <div style="text-align: center; padding: 50px; background: white; border-radius: 15px;">
+            <p style="font-size: 1.2rem; color: #777;">You haven't placed any orders yet.</p>
+            <a href="{{ url_for('products') }}" class="cta-button">Start Shopping</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

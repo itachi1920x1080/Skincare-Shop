@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Product - Admin{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="page-header">
+        <h2>Add New Product</h2>
+        <a href="{{ url_for('admin_dashboard') }}" style="color: #666; text-decoration: none;">&larr; Back to Inventory</a>
+    </div>
+
+    <div style="max-width: 600px; background: white; padding: 30px; border-radius: 8px; margin: 0 auto; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
+        <form action="{{ url_for('admin_add_product') }}" method="POST" enctype="multipart/form-data">
+            
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 500;">Product Name</label>
+                <input type="text" name="name" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+
+            <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+                <div style="flex: 1;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">Price ($)</label>
+                    <input type="number" step="0.01" name="price" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <div style="flex: 1;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">Stock</label>
+                    <input type="number" name="stock" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 500;">Category</label>
+                <select name="category" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                    <option value="Men">Men</option>
+                    <option value="Women">Women</option>
+                    <option value="Kids">Kids</option>
+                    <option value="Accessories">Accessories</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 500;">Image</label>
+                <input type="file" name="image" required accept="image/*" style="width: 100%;">
+            </div>
+
+            <button type="submit" style="width: 100%; padding: 12px; background: #000; color: white; border: none; font-weight: bold; border-radius: 4px; cursor: pointer;">
+                Publish Product
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

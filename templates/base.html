@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Darling Skincare{% endblock %}</title>
     
-    <link rel="stylesheet" href="{{ url_for('static', filename='CSS/Style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/Style.css') }}">
     
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -20,21 +20,28 @@
         
         <nav class="navlinks" id="main-navigation">
             <ul class="drop" role="menubar" aria-label="Main Navigation">
-                <li role="none">
-                    <a href="{{ url_for('index') }}" role="menuitem">Home</a>
-                </li>
+                <li role="none"><a href="{{ url_for('index') }}" role="menuitem">Home</a></li>
+                <li role="none"><a href="{{ url_for('products') }}" role="menuitem">Products</a></li>
+                <li role="none"><a href="{{ url_for('feedback') }}" role="menuitem">Feedback</a></li>
+                <li role="none"><a href="{{ url_for('about_us') }}" role="menuitem">About Us</a></li>
+                <li role="none"><a href="{{ url_for('contact') }}" role="menuitem">Contact</a></li>        
                 
-                <li role="none">
-                    <a href="{{ url_for('products') }}" role="menuitem">Products</a>
-                </li>
+                {% if session.get('user_id') %}
+                    <li><a href="{{ url_for('orders') }}">My Orders</a></li>
+                    
+                    {% if session.get('role') == 'admin' %}
+                        <li><a href="{{ url_for('admin') }}" style="color: #ffd700;">Dashboard</a></li>
+                        <li><a href="{{ url_for('admin_add_product') }}" style="color: #ffd700;">+ Product</a></li>
+                        <li><a href="{{ url_for('admin_analytics') }}" style="color: #ffd700;">Analytics</a></li>
+                    {% endif %}
 
-                <li role="none">
-                    <a href="{{ url_for('feedback') }}" role="menuitem">Feedback</a>
-                </li>
-                                
-                <li role="none">
-                    <a href="{{ url_for('login') }}" role="menuitem">Login</a>
-                </li>
+                    <li><a href="#" class="user-name">Welcome, {{ session.get('username') }}</a></li>
+                    <li><a href="{{ url_for('logout') }}" class="logout-btn">Logout</a></li>
+                
+                {% else %}
+                    <li><a href="{{ url_for('login') }}">Login</a></li>
+                    <li><a href="{{ url_for('register') }}" class="nav-register">Register</a></li>
+                {% endif %}
             </ul>
         </nav>
 
@@ -45,62 +52,76 @@
     </header>
 
     <main>
+        <div class="flash-container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">
+                            {{ message }}
+                            <span class="close-flash" onclick="this.parentElement.style.display='none';">&times;</span>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
         {% block content %}{% endblock %} 
     </main>
+
     <footer class="main-footer">
-    <div class="footer-top-newsletter">
-        <div class="newsletter-content">
-            <div class="newsletter-text">
-                <h2>Join our newsletter</h2>
-                <p>Get exclusive deals, skincare tips, and early access to sales.</p>
-                <p class="privacy-note">We respect your inbox. Unsubscribe anytime.</p>
-            </div>
-            
-            <form class="newsletter-form" id="newsletterForm">
-                <input type="email" id="email-newsletter" placeholder="you@example.com" required>
-                <button type="submit" id="subscribeBtn">Subscribe</button>
-            </form>
-        </div>
-    </div>
-
-    <div class="footer-bottom-content" id ="footer-links">
-        <div class="footer-logo-col">
-            <span class="logo-text">Darling Store</span>
-            <p class="tagline">Unlock your skin's natural radiance.</p>
-            <div class="social-media">
-                <a href="#"><i class="fab fa-facebook"></i></a>
-                <a href="#"><i class="fab fa-instagram"></i></a>
-                <a href="#"><i class="fab fa-tiktok"></i></a>
+        <div class="footer-top-newsletter">
+            <div class="newsletter-content">
+                <div class="newsletter-text">
+                    <h2>Join our newsletter</h2>
+                    <p>Get exclusive deals, skincare tips, and early access to sales.</p>
+                    <p class="privacy-note">We respect your inbox. Unsubscribe anytime.</p>
+                </div>
+                
+                <form class="newsletter-form" id="newsletterForm">
+                    <input type="email" id="email-newsletter" placeholder="you@example.com" required>
+                    <button type="submit" id="subscribeBtn">Subscribe</button>
+                </form>
             </div>
         </div>
 
-        <div class="footer-links-group">
-            <div class="footer-links">
-                <h4>Shop</h4>
-                <ul>
-                    <li><a href="{{ url_for('products') }}">All Products</a></li>
-                    <li><a href="#">Best Sellers</a></li>
-                </ul>
+        <div class="footer-bottom-content" id="footer-links">
+            <div class="footer-logo-col">
+                <span class="logo-text">Darling Store</span>
+                <p class="tagline">Unlock your skin's natural radiance.</p>
+                <div class="social-media">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-tiktok"></i></a>
+                </div>
             </div>
-            <div class="footer-links">
-                <h4>Support</h4>
-                <ul>
-                    <li><a href="#">Contact Us</a></li>
-                    <li><a href="#">FAQs</a></li>
-                </ul>
-            </div>
-        </div>
-    </div>
 
-    <div class="copyright">
-        <div class="copyright-content">
-            <p>&copy; 2026 Darling Skincare. All rights reserved. | 
-                <a href="#">Privacy Policy</a> |
-                <a href="#">Terms of Service</a>
-            </p>
-            <p class="credit">Team build project</p>
+            <div class="footer-links-group">
+                <div class="footer-links">
+                    <h4>Shop</h4>
+                    <ul>
+                        <li><a href="{{ url_for('products') }}">All Products</a></li>
+                        <li><a href="#">Best Sellers</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">FAQs</a></li>
+                    </ul>
+                </div>
+            </div>
         </div>
-</div>
+
+        <div class="copyright">
+            <div class="copyright-content">
+                <p>&copy; 2026 Darling Skincare. All rights reserved. |
+                    <a href="#">Privacy Policy</a> |
+                    <a href="#">Terms of Service</a>
+                </p>
+                <p class="credit">Team build project</p>
+            </div>
+        </div>
     </footer>
 
     <div id="cart-modal" class="cart-modal">
@@ -131,8 +152,11 @@
             </div>
         </div>
     </div>
+
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script src="{{ url_for('static', filename='JS/Style-js.js') }}"></script>
+    
+    <script src="{{ url_for('static', filename='js/Style-js.js') }}"></script>
+    
     <script>
         AOS.init({ duration: 800, once: true }); 
     </script>

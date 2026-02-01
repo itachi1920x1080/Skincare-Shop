@@ -1,0 +1,141 @@
+/* Unique wrapper for the cream background */
+.register-section {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f7f3f0; /* Soft cream background seen in screenshots */
+    padding: 20px;
+}
+
+/* The White Card design */
+.register-card {
+    background: #d1787c;;
+    padding: 60px 50px;
+    border-radius: 40px; /* Highly rounded corners from your design */
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    text-align: center;
+}
+
+.register-title {
+    color:#f2f2f2; /* Brand peach-pink */
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin-bottom: 5px;
+}
+
+.register-subtitle {
+    color: #666;
+    margin-bottom: 30px;
+}
+
+/* Light-themed pill inputs */
+.reg-input-group {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.reg-input-group label {
+    display: block;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: #bda5a6; /* Mauve label color */
+    margin-bottom: 8px;
+    padding-left: 15px;
+}
+
+.reg-input-group input {
+    width: 100%;
+    padding: 14px 25px;
+    border-radius: 50px; /* Pill shape seen in design */
+    border: 2px solid #f2f2f2;
+    background-color: #fff;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.reg-input-group input:focus {
+    border-color: #e5989b; /* Brand pink focus */
+}
+
+/* Peach Action Button */
+.register-btn {
+    width: 100%;
+    background-color: white;
+    color: #e5989b;
+    padding: 16px;
+    border: none;
+    border-radius: 50px;
+    font-weight: 800;
+    font-size: 1.1rem;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: transform 0.2s, background 0.3s;
+}
+
+.register-btn:hover {
+    background-color: #bda5a6; Shifts to mauve on hover
+    transform: scale(1.02);
+}
+
+.switch-text {
+    margin-top: 25px;
+    font-size: 0.95rem;
+    color: #555;
+}
+
+.switch-text a {
+    color: #6a2c91; /* Purple login link from design */
+    font-weight: 800;
+    text-decoration: none;
+}
+
+
+/* ==================================== */
+/* 3. INPUT FIELD STYLING (CORRECTED)   */
+/* ==================================== */
+.input-field{
+    margin-bottom: 22px;
+    text-align: left;
+}
+
+/* Luxury mauve labels */
+.input-field label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: #bda5a6; /* Brand mauve color */
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding-left: 20px;
+}
+
+/* White pill-shaped inputs */
+.input-field input {
+    width: 100%;
+    padding: 14px 25px;
+    border: 2px solid #f2f2f2; /* Light border for the white card */
+    border-radius: 50px; /* Full pill shape */
+    background-color: #ffffff;
+    color: #333; /* Darker text for readability on white */
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    box-sizing: border-box; /* Crucial for width: 100% */
+    outline: none;
+}
+
+/* Focus state with brand glow */
+.input-field input:focus {
+    border-color: #e5989b; /* Brand pink focus */
+    box-shadow: 0 0 10px rgba(229, 152, 155, 0.2);
+    background-color: #fff;
+}
+
+/* Placeholder styling */
+.input-field input::placeholder {
+    color: #bbb;
+}

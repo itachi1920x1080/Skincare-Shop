@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Order #{{ order.id }} - Darling Skincare{% endblock %}
+
+{% block content %}
+<div class="admin-container" style="max-width: 800px; margin: 40px auto;">
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h1>Order #{{ order.id }}</h1>
+        <a href="{{ url_for('orders') }}" class="view-btn">&larr; Back to Orders</a>
+    </div>
+
+    <div class="stat-card" style="margin-bottom: 30px; border-left: 5px solid #d1787c;">
+        <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 20px;">
+            <div>
+                <strong>Date:</strong><br>
+                {{ order.order_date.strftime('%Y-%m-%d %H:%M') }}
+            </div>
+            <div>
+                <strong>Status:</strong><br>
+                <span class="status-badge status-{{ order.status|lower }}">{{ order.status }}</span>
+            </div>
+            <div>
+                <strong>Total Amount:</strong><br>
+                <span style="font-size: 1.2rem; color: #d1787c; font-weight: bold;">
+                    ${{ "%.2f"|format(order.total_amount) }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="order-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Qty</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td style="display: flex; align-items: center; gap: 15px;">
+                        <img src="{{ url_for('static', filename='image/products/' + item.image_filename) }}" 
+                             style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+                        <span>{{ item.name }}</span>
+                    </td>
+                    <td>${{ "%.2f"|format(item.price) }}</td>
+                    <td>x {{ item.quantity }}</td>
+                    <td style="font-weight: bold;">${{ "%.2f"|format(item.price * item.quantity) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if session.get('role') == 'admin' %}
+    <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+        <h4>Admin Actions:</h4>
+        <form action="{{ url_for('update_order_status', order_id=order.id) }}" method="POST" style="display: flex; gap: 10px;">
+            <select name="status" style="padding: 10px; border-radius: 5px;">
+                <option value="Pending" {% if order.status == 'Pending' %}selected{% endif %}>Pending</option>
+                <option value="Completed" {% if order.status == 'Completed' %}selected{% endif %}>Completed</option>
+                <option value="Cancelled" {% if order.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+            </select>
+            <button type="submit" class="cta-button" style="padding: 10px 20px; font-size: 0.9rem;">Update Status</button>
+        </form>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}
