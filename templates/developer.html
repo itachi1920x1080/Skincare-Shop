@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Our Team - Darling Skincare{% endblock %}
+
+{% block content %}
+<section class="team-container" data-aos="fade-up">
+    <div class="team-header">
+        <h1 class="section-title">Meet Our Team</h1>
+        <p class="section-subtitle">ពួកយើងគឺជាក្រុមនិស្សិតដែលបានរួមគ្នាបង្កើតគម្រោង Darling Skincare នេះឡើង ដើម្បីផ្តល់បទពិសោធន៍ទិញទំនិញដ៏ល្អបំផុត។</p>
+    </div>
+
+    <div class="team-grid">
+        <div class="team-card">
+            <div class="team-image">
+                <img src="{{ url_for('static', filename='image/team/member1.jpg') }}" alt="Team Leader">
+            </div>
+            <div class="team-info">
+                <h3>ម៉ៅ វិសាល</h3>
+                <span class="role">Team Leader & Full-stack Developer</span>
+                <p>ទទួលបន្ទុកលើការរៀបចំ Database និងការសរសេរកូដ Backend ជាមួយ Python Flask។</p>
+                <div class="team-social">
+                    <a href="https://github.com/itachi1920x1080"><i class="fab fa-github"></i></a>
+                    <a href="https://www.linkedin.com/in/itachi1920x1080"><i class="fab fa-linkedin"></i></a>
+                    <a href="https://t.me/Lovealonesusususususususususu"><i class="fab fa-telegram"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="team-card">
+            <div class="team-image">
+                <img src="{{ url_for('static', filename='image/team/member2.jpg') }}" alt="Frontend Developer">
+            </div>
+            <div class="team-info">
+                <h3>ម៉ាច ប៊ុនណេង</h3>
+                <span class="role">Frontend Developer & UI Designer</span>
+                <p>ទទួលបន្ទុកលើការរៀបចំរចនាបថវេបសាយ HTML, CSS និង JavaScript ឱ្យមានភាពទាក់ទាញ។</p>
+                <div class="team-social">
+                    <a href="https://github.com/bunnengmach090524-Lang"><i class="fab fa-github"></i></a>
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="https://t.me/bunnengmach090524"><i class="fab fa-telegram"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="team-card">
+            <div class="team-image">
+                <img src="{{ url_for('static', filename='image/team/member3.jpg') }}" alt="Database Admin">
+            </div>
+            <div class="team-info">
+                <h3>Xiao Yan[ :D ]</h3>
+                <span class="role">Database Admin & Tester</span>
+                <p>ទទួលបន្ទុកលើការរៀបចំ MySQL Schema និងការធ្វើតេស្តមុខងារកន្ត្រកទំនិញ (Cart System)។</p>
+                <div class="team-social">
+                    <a href="https://github.com/itachi1920x1080"><i class="fab fa-github"></i></a>
+                    <a href="https://www.linkedin.com/in/itachi1920x1080"><i class="fab fa-linkedin"></i></a>
+                    <a href="https://t.me/Lovealonesusususususususususu"><i class="fab fa-telegram"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

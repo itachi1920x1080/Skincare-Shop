@@ -1,56 +1,97 @@
 {% extends 'base.html' %}
 
-{% block title %}Edit Product - Admin{% endblock %}
+{% block title %}កែសម្រួលទំនិញ - Admin{% endblock %}
 
 {% block content %}
-<div class="dashboard-container">
-    <div class="page-header">
-        <h2>Edit Product</h2>
-        <a href="{{ url_for('admin_dashboard') }}" style="color: #666; text-decoration: none;">&larr; Cancel</a>
-    </div>
+<div class="dashboard-container" style="padding: 40px; background: #f8f9fa; min-height: 90vh; font-family: 'Inter', sans-serif;">
+    <div style="max-width: 700px; background: white; padding: 35px; border-radius: 20px; margin: 0 auto; box-shadow: 0 15px 35px rgba(0,0,0,0.08);">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 2px solid #f1f2f6; padding-bottom: 15px;">
+            <h2 style="margin: 0; color: #2f3542;">កែសម្រួល: <span style="color: #6a0dad;">{{ product.name }}</span></h2>
+            <a href="{{ url_for('admin') }}" style="text-decoration: none; color: #a4b0be; font-size: 14px; font-weight: 500; transition: 0.3s;" onmouseover="this.style.color='#6a0dad'">&larr; ត្រឡប់ក្រោយ</a>
+        </div>
 
-    <div style="max-width: 600px; background: white; padding: 30px; border-radius: 8px; margin: 0 auto; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
-        <form method="POST" enctype="multipart/form-data">
+        <form action="{{ url_for('edit_product', product_id=product.id) }}" method="POST" enctype="multipart/form-data">
             
             <div style="margin-bottom: 20px;">
-                <label style="display: block; margin-bottom: 8px; font-weight: 500;">Product Name</label>
-                <input type="text" name="name" value="{{ product.name }}" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #57606f;">ឈ្មោះទំនិញ</label>
+                <input type="text" name="name" value="{{ product.name }}" required 
+                       style="width: 100%; padding: 12px; border: 2px solid #edeff2; border-radius: 10px; outline: none; font-size: 16px; transition: 0.3s;"
+                       onfocus="this.style.borderColor='#6a0dad'">
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #57606f;">ព័ត៌មានពិពណ៌នា</label>
+                <textarea name="description" rows="4" required
+                          style="width: 100%; padding: 12px; border: 2px solid #edeff2; border-radius: 10px; font-family: inherit; outline: none; transition: 0.3s; line-height: 1.6;"
+                          onfocus="this.style.borderColor='#6a0dad'">{{ product.description }}</textarea>
             </div>
 
             <div style="display: flex; gap: 20px; margin-bottom: 20px;">
                 <div style="flex: 1;">
-                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">Price ($)</label>
-                    <input type="number" step="0.01" name="price" value="{{ product.price }}" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #57606f;">តម្លៃ ($)</label>
+                    <input type="number" step="0.01" name="price" value="{{ product.price }}" required 
+                           style="width: 100%; padding: 12px; border: 2px solid #edeff2; border-radius: 10px; outline: none;">
                 </div>
                 <div style="flex: 1;">
-                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">Stock</label>
-                    <input type="number" name="stock" value="{{ product.stock }}" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #57606f;">ចំនួនស្តុក</label>
+                    <input type="number" name="stock" value="{{ product.stock }}" required 
+                           style="width: 100%; padding: 12px; border: 2px solid #edeff2; border-radius: 10px; outline: none;">
                 </div>
             </div>
 
             <div style="margin-bottom: 20px;">
-                <label style="display: block; margin-bottom: 8px; font-weight: 500;">Category</label>
-                <select name="category" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
-                    <option value="Men" {% if product.category == 'Men' %}selected{% endif %}>Men</option>
-                    <option value="Women" {% if product.category == 'Women' %}selected{% endif %}>Women</option>
-                    <option value="Kids" {% if product.category == 'Kids' %}selected{% endif %}>Kids</option>
-                    <option value="Accessories" {% if product.category == 'Accessories' %}selected{% endif %}>Accessories</option>
+                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #57606f;">ប្រភេទផលិតផល</label>
+                <select name="category" required style="width: 100%; padding: 12px; border: 2px solid #edeff2; border-radius: 10px; background: white; cursor: pointer;">
+                    {% for cat in categories %}
+                    <option value="{{ cat }}" {% if cat == product.category %}selected{% endif %}>{{ cat }}</option>
+                    {% endfor %}
                 </select>
             </div>
 
-            <div style="margin-bottom: 20px;">
-                <label style="display: block; margin-bottom: 8px; font-weight: 500;">Current Image</label>
-                {% if product.image %}
-                    <img src="{{ url_for('static', filename='images/' + product.image) }}" width="80" style="border-radius: 4px; margin-bottom: 10px;">
-                {% endif %}
-                <input type="file" name="image" accept="image/*" style="width: 100%;">
-                <small style="color: #888;">Leave empty to keep current image.</small>
+            <div style="margin-bottom: 30px; background: #fafafa; padding: 25px; border-radius: 15px; border: 2px dashed #edeff2;">
+                <label style="display: block; margin-bottom: 15px; font-weight: 600; color: #57606f;">រូបភាពផលិតផល</label>
+                <div style="display: flex; align-items: center; gap: 25px;">
+                    <div style="text-align: center;">
+                        <small style="display: block; color: #a4b0be; margin-bottom: 8px;">រូបភាពបច្ចុប្បន្ន</small>
+                        <img src="{{ url_for('static', filename='image/products/' + product.image_filename) if product.image_filename else url_for('static', filename='image/default.jpg') }}" 
+                             id="imgPreview" width="130" height="130" 
+                             style="border-radius: 12px; object-fit: cover; border: 3px solid #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.1); filter: brightness(105%); transition: 0.3s;">
+                    </div>
+                    <div style="flex: 1;">
+                        <input type="file" name="image" id="fileInput" accept="image/*" style="font-size: 14px; color: #57606f;">
+                        <p style="font-size: 12px; color: #a4b0be; margin-top: 12px; line-height: 1.4;">
+                            * ជ្រើសរើសឯកសារថ្មី ប្រសិនបើលោកអ្នកចង់ផ្លាស់ប្តូររូបភាព។ រូបភាពគួរមានទំហំសមាមាត្រ ១:១ ដើម្បីបង្ហាញបានស្អាតបំផុត។
+                        </p>
+                    </div>
+                </div>
             </div>
 
-            <button type="submit" style="width: 100%; padding: 12px; background: #000; color: white; border: none; font-weight: bold; border-radius: 4px; cursor: pointer;">
-                Save Changes
-            </button>
+            <div style="display: flex; gap: 15px;">
+                <button type="submit" style="flex: 2; padding: 16px; background: #6a0dad; color: white; border: none; font-weight: bold; border-radius: 12px; cursor: pointer; font-size: 16px; transition: 0.3s; box-shadow: 0 10px 20px rgba(106, 13, 173, 0.15);"
+                    onmouseover="this.style.backgroundColor='#520b8a'; this.style.transform='translateY(-2px)'"
+                    onmouseout="this.style.backgroundColor='#6a0dad'; this.style.transform='translateY(0)'">
+                    រក្សាទុកការកែប្រែ
+                </button>
+                <a href="{{ url_for('admin') }}" style="flex: 1; padding: 16px; background: #edeff2; color: #57606f; text-decoration: none; text-align: center; border-radius: 12px; font-weight: bold; transition: 0.3s;"
+                    onmouseover="this.style.background='#e2e5e9'">
+                    បោះបង់
+                </a>
+            </div>
         </form>
     </div>
 </div>
+
+<script>
+    const fileInput = document.getElementById('fileInput');
+    const imgPreview = document.getElementById('imgPreview');
+
+    fileInput.onchange = evt => {
+        const [file] = fileInput.files;
+        if (file) {
+            imgPreview.src = URL.createObjectURL(file);
+            imgPreview.style.borderColor = '#6a0dad'; // ប្តូរពណ៌ស៊ុមពេលជ្រើសរើសរូបថ្មី
+        }
+    }
+</script>
 {% endblock %}

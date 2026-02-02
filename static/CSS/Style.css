@@ -8,6 +8,13 @@
     --bg-cream: #f7f3f0;
     --text-dark: #333;
     --white: #ffffff;
+    --primary-color: #6a0dad;    /* ពណ៌ស្វាយសម្រាប់ Admin */
+    --accent-color: #ffd700;     /* ពណ៌មាសសម្រាប់ Dashboard */
+    --success-color: #2ecc71;    /* ពណ៌បៃតង */
+    --danger-color: #e74c3c;     /* ពណ៌ក្រហម */
+    --warning-color: #f1c40f;    /* ពណ៌លឿង */
+    --bg-light: #f8f9fa;
+    --text-dark: #2d3436;
 }
 
 body {
@@ -1198,3 +1205,421 @@ a {
 @media (max-width: 768px) {
     .charts-section { grid-template-columns: 1fr; }
 }
+
+
+.flash-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    width: 300px;
+}
+
+.flash-message {
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    color: white;
+    font-weight: 500;
+    position: relative;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    animation: slideIn 0.5s ease-out;
+}
+
+/* ពណ៌បៃតងសម្រាប់ Success */
+.flash-success {
+    background-color: #2ecc71;
+    border-left: 5px solid #27ae60;
+}
+
+/* ពណ៌ក្រហមសម្រាប់ Error/Danger (Fail) */
+.flash-danger {
+    background-color: #e74c3c;
+    border-left: 5px solid #c0392b;
+}
+
+/* ពណ៌លឿងសម្រាប់ Warning (Bug/Alert) */
+.flash-warning {
+    background-color: #f1c40f;
+    border-left: 5px solid #f39c12;
+    color: #333; /* ប្រើអក្សរខ្មៅលើផ្ទៃលឿងឱ្យងាយមើល */
+}
+
+.close-btn {
+    position: absolute;
+    right: 10px;
+    top: 5px;
+    cursor: pointer;
+    font-size: 20px;
+}
+body {
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text-dark);
+    margin: 0;
+    padding: 0;
+}
+
+/* 2. Flash Messages Styling */
+.flash-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1100;
+    width: 320px;
+}
+
+.flash-message {
+    padding: 15px 20px;
+    margin-bottom: 12px;
+    border-radius: 10px;
+    color: white;
+    font-weight: 500;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    animation: slideIn 0.4s ease-out;
+}
+
+.flash-success { background: var(--success-color); border-left: 6px solid #27ae60; }
+.flash-danger { background: var(--danger-color); border-left: 6px solid #c0392b; }
+.flash-warning { background: var(--warning-color); border-left: 6px solid #f39c12; color: #333; }
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+/* 3. Admin & Inventory Table Styling */
+.admin-container {
+    padding: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.table-responsive {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    overflow-x: auto;
+}
+
+.order-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.order-table th {
+    text-align: left;
+    padding: 15px;
+    border-bottom: 2px solid #eee;
+    color: #888;
+    font-size: 14px;
+    text-transform: uppercase;
+}
+
+.order-table td {
+    padding: 15px;
+    border-bottom: 1px solid #f1f1f1;
+    vertical-align: middle;
+}
+
+/* 4. Buttons & Badges */
+.view-btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: 0.3s;
+    border: 1px solid transparent;
+}
+
+.status-badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.status-completed { background: #d4edda; color: #155724; }
+.status-pending { background: #fff3cd; color: #856404; }
+
+/* 5. Form Styling (Add/Edit) */
+.form-group {
+    margin-bottom: 20px;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(106, 13, 173, 0.1);
+    outline: none;
+}
+/* Container សម្រាប់ផ្ទុកសារដែលលោតចេញមក */
+.flash-container {
+    position: fixed;
+    top: 85px; /* កម្ពស់ឱ្យនៅក្រោម Header បន្តិច */
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none; /* ការពារកុំឱ្យបាំងការចុចលើ UI ផ្សេងទៀត */
+}
+
+/* រចនាបថរួមនៃសារនីមួយៗ */
+.flash-message {
+    min-width: 280px;
+    padding: 16px 20px;
+    border-radius: 12px;
+    color: white;
+    font-weight: 500;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    pointer-events: auto; /* បើកឱ្យចុចលើប៊ូតុង Close បាន */
+    animation: toastSlideIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+/* ពណ៌បៃតង - Success */
+.flash-success {
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    border-left: 6px solid #1e8449;
+}
+
+/* ពណ៌ក្រហម - Danger/Fail */
+.flash-danger {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    border-left: 6px solid #94291f;
+}
+
+/* ពណ៌លឿង - Warning/Bug */
+.flash-warning {
+    background: linear-gradient(135deg, #f1c40f, #f39c12);
+    border-left: 6px solid #d4ac0d;
+    color: #333;
+}
+
+/* ប៊ូតុងបិទ (X) */
+.close-btn {
+    margin-left: 15px;
+    cursor: pointer;
+    font-size: 22px;
+    line-height: 1;
+    opacity: 0.7;
+}
+
+.close-btn:hover {
+    opacity: 1;
+}
+
+/* Animation ពេលលោតចេញមក */
+@keyframes toastSlideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+/* Style សម្រាប់ទំព័រ Story */
+.products-container {
+    padding: 80px 20px;
+    background-color: #fff;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    color:  #e5989b; /* ពណ៌ស្វាយដែលអ្នកប្រើសម្រាប់ Admin */
+    text-align: center;
+    margin-bottom: 40px;
+    font-family: 'Playfair Display', serif; /* ឬ Font បែបប្រណីតផ្សេងទៀត */
+}
+
+.story-content {
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.8;
+    color: #444;
+    text-align: center;
+    font-size: 1.1rem;
+}
+
+.story-content p {
+    margin-bottom: 25px;
+}
+
+.story-content strong {
+    color: #6a0dad;
+}
+
+
+.team-container {
+    padding: 60px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.team-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+.team-card {
+    background: #fff;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    transition: 0.3s;
+    text-align: center;
+}
+
+.team-card:hover {
+    transform: translateY(-10px);
+}
+
+.team-image {
+    height: 250px;
+    overflow: hidden;
+}
+
+.team-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.team-info {
+    padding: 20px;
+}
+
+.team-info h3 {
+    margin: 10px 0 5px;
+    color: #333;
+}
+
+.role {
+    color: #6a0dad;
+    font-weight: 600;
+    font-size: 14px;
+    display: block;
+    margin-bottom: 15px;
+}
+
+.team-social {
+    margin-top: 15px;
+}
+
+.team-social a {
+    color: #888;
+    font-size: 18px;
+    margin: 0 10px;
+    transition: 0.3s;
+}
+
+.team-social a:hover {
+    color: #6a0dad;
+}
+.team-image {
+    width: 160px;
+    height: 160px;
+    margin: 30px auto 15px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 5px solid #fff;
+    /* បន្ថែម Shadow ឱ្យរូបភាពមើលទៅលោតចេញមកក្រៅ */
+    box-shadow: 0 8px 20px rgba(106, 13, 173, 0.15); 
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    background-color: #f8f9fa;
+    
+    /* ធានាថារូបភាពមិនស្រអាប់ */
+    opacity: 1 !important; 
+    filter: brightness(100%) contrast(105%); /* បន្ថែមពន្លឺ និងភាពច្បាស់បន្តិច */
+}
+
+.team-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* ការពារកុំឱ្យរូបភាពរួមស្វិត */
+    image-rendering: -webkit-optimize-contrast; /* បង្កើនភាពច្បាស់សម្រាប់ Browser */
+    display: block;
+}
+
+/* ពេល Hover ឱ្យរូបភាពកាន់តែភ្លឺ */
+.team-card:hover .team-image {
+    border-color: #6a0dad;
+    transform: scale(1.1);
+    filter: brightness(110%); /* ឱ្យរូបភាពភ្លឺជាងមុនបន្តិចពេលដាក់ Mouse ពីលើ */
+}
+
+.team-card {
+    background: #ffffff;
+    border-radius: 20px;
+    /* បន្ថែម Border ស្តើងពណ៌ស្វាយស្រាល កុំឱ្យមើលទៅរាបពេក */
+    border: 1px solid rgba(106, 13, 173, 0.1); 
+    padding: 15px;
+    transition: all 0.3s ease;
+}
+
+.team-card:hover {
+    transform: translateY(-15px);
+    border-color: #6a0dad; /* ប្តូរពណ៌ស៊ុមពេលដាក់ Mouse ពីលើ */
+    box-shadow: 0 15px 35px rgba(106, 13, 173, 0.1);
+}
+
+.team-card:hover .team-image {
+    border-color: #6a0dad;
+    transform: scale(1.05); /* រូបភាពរីកធំបន្តិច */
+}
+
+/* កែសម្រួលស្ទីល Social Icons */
+.team-social a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 35px;
+    height: 35px;
+    background: #f4f4f4;
+    border-radius: 50%;
+    color: #6a0dad;
+    font-size: 16px;
+    margin: 0 5px;
+    transition: 0.3s;
+    text-decoration: none;
+}
+
+.team-social a:hover {
+    background: #6a0dad;
+    color: #fff;
+    transform: rotate(360deg); /* បង្វិល Icon ពេល Hover */
+}
+
+

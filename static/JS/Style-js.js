@@ -8,6 +8,7 @@
 //     { id: "cleanser_niacinamide", name: "Niacinamide Cleanser", category: "Cleanser (Niacinamide)", description: "Control oil and minimize pores.", price: "$25.00", image: "https://www.dermstore.com/blog/wp-content/uploads/2020/06/Niacinamide-Cleanser-Dermstore.jpg" },
 //     { id: "moisturizer_spf", name: "Daily Moisturizer SPF 30", category: "Moisturizer (SPF)", description: "Hydrate and protect from UV rays.", price: "$38.00", image: "https://www.paulaschoice.com/on/demandware.static/-/Sites-PCUS-Library/default/dw5b6e1f9c6/images/product-images/pc/pc_resist_super_light_spf_30_moisturizer_1.jpg" }
 // ];
+
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 // 2. DOM ELEMENTS
 const productGrid = document.getElementById('product-grid');
@@ -72,7 +73,30 @@ function addToCart(id, name, price, image) {
     updateCartUI();
     
     // Optional: Show a success message
-    alert("បន្ថែមទៅក្នុងកន្ត្រកបានជោគជ័យ!"); 
+    // alert("បន្ថែមទៅក្នុងកន្ត្រកបានជោគជ័យ!");
+    showFlashMessage(`${name} បន្ថែមជោគជ័យ!`, "success");
+
+}
+
+function showFlashMessage(message, category) {
+    const container = document.querySelector('.flash-container');
+    if (!container) return;
+
+    const flashDiv = document.createElement('div');
+    flashDiv.className = `flash-message flash-${category}`;
+    flashDiv.innerHTML = `
+        <span><i class="fas fa-check-circle"></i> ${message}</span>
+        <span class="close-btn" onclick="this.parentElement.remove()">&times;</span>
+    `;
+
+    container.appendChild(flashDiv);
+
+    // លុបវាចេញវិញដោយស្វ័យប្រវត្តិក្រោយ ៤ វិនាទី
+    setTimeout(() => {
+        flashDiv.style.opacity = '0';
+        flashDiv.style.transform = 'translateX(20px)';
+        setTimeout(() => flashDiv.remove(), 500);
+    }, 4000);
 }
 window.removeFromCart = (index) => {
     // 1. Remove the item from the array

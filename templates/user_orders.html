@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}My Orders - Darling Skincare{% endblock %}
+
+{% block content %}
+<div style="max-width: 1000px; margin: 40px auto; padding: 20px;">
+    <h2 style="color: #6a0dad; margin-bottom: 30px;">
+        <i class="fas fa-shopping-bag"></i> ប្រវត្តិបញ្ជាទិញរបស់ខ្ញុំ
+    </h2>
+
+    {% if orders %}
+        <div style="overflow-x: auto; background: white; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
+            <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                <thead>
+                    <tr style="background: #f8f9fa; border-bottom: 2px solid #eee;">
+                        <th style="padding: 15px;">Order ID</th>
+                        <th style="padding: 15px;">កាលបរិច្ឆេទ</th>
+                        <th style="padding: 15px;">សរុបថវិកា</th>
+                        <th style="padding: 15px;">ស្ថានភាព</th>
+                        <th style="padding: 15px;">សកម្មភាព</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr style="border-bottom: 1px solid #eee;">
+                        <td style="padding: 15px; font-weight: bold;">#{{ order.id }}</td>
+                        <td style="padding: 15px;">{{ order.order_date }}</td>
+                        <td style="padding: 15px; color: #6a0dad; font-weight: bold;">${{ "%.2f"|format(order.total_amount) }}</td>
+                        <td style="padding: 15px;">
+                            <span style="padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; 
+                                background: {% if order.status == 'pending' %}#fff3cd{% else %}#d4edda{% endif %};
+                                color: {% if order.status == 'pending' %}#856404{% else %}#155724{% endif %};">
+                                {{ order.status|capitalize }}
+                            </span>
+                        </td>
+                        <td style="padding: 15px;">
+                            <a href="{{ url_for('view_invoice', order_id=order.id) }}" 
+                               style="text-decoration: none; background: #2f3542; color: white; padding: 7px 15px; border-radius: 8px; font-size: 0.9rem;">
+                                <i class="fas fa-file-invoice"></i> មើលវិក្កយបត្រ
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 50px; background: white; border-radius: 15px;">
+            <i class="fas fa-box-open" style="font-size: 4rem; color: #eee; margin-bottom: 20px;"></i>
+            <p style="color: #a4b0be;">អ្នកមិនទាន់មានប្រវត្តិបញ្ជាទិញនៅឡើយទេ។</p>
+            <a href="{{ url_for('products') }}" style="color: #6a0dad; text-decoration: none; font-weight: bold;">ទៅមើលផលិតផលឥឡូវនេះ</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

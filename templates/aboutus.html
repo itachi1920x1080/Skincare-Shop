@@ -5,10 +5,22 @@
 {% block content %}
 <section class="products-container" data-aos="fade-up">
     <h1 class="section-title">Our Story</h1>
-    <div style="max-width: 800px; margin: 0 auto; line-height: 1.8; color: #555;">
+    <div class="story-content" style="text-align: center; max-width: 800px; margin: 0 auto;">
         <p>Welcome to <strong>Darling Skincare</strong>. Founded in 2026, our mission is to unlock your skin's natural radiance through science-backed formulas and gentle ingredients.</p>
         
         <p>This platform was developed as a <strong>Team build project</strong> to showcase a modern e-commerce experience, focusing on user-friendly navigation and secure digital payments.</p>
+        
+        <div style="margin-top: 20px;">
+            <a href="{{ url_for('developer') }}" class="add-to-cart-btn" style="text-decoration: none; display: inline-block; padding: 10px 25px;">
+                Meet Our Developers
+            </a>
+        </div>
+
+        <div style="margin-top: 40px;">
+            <img src="{{ url_for('static', filename='image/vision.jpg') }}" 
+                 alt="Our Vision" 
+                 style="width: 5%; max-width: 600px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+        </div>
     </div>
 </section>
 {% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Terms of Service - Darling Skincare{% endblock %}
+
+{% block content %}
+<div style="background: #f4f7f6; padding: 60px 20px; min-height: 80vh;">
+    <div style="max-width: 800px; margin: 0 auto; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+        <h2 style="color: #6a0dad; border-bottom: 2px solid #f1f1f1; padding-bottom: 15px;">
+            <i class="fas fa-gavel"></i> លក្ខខណ្ឌនៃការប្រើប្រាស់ (Terms of Service)
+        </h2>
+        
+        <div style="margin-top: 25px; line-height: 1.8; color: #57606f;">
+            <h4 style="color: #2f3542;">១. ការប្រើប្រាស់គណនី</h4>
+            <p>លោកអ្នកត្រូវផ្តល់ព័ត៌មានពិតប្រាកដនៅពេលចុះឈ្មោះ (Register) ដើម្បីងាយស្រួលក្នុងការទាក់ទង និងដឹកជញ្ជូន។</p>
+
+            <h4 style="color: #2f3542; margin-top: 20px;">២. តម្លៃ និងការទូទាត់</h4>
+            <p>រាល់តម្លៃផលិតផលទាំងអស់ត្រូវបានបង្ហាញជាដុល្លារ ($)។ យើងខ្ញុំរក្សាសិទ្ធិក្នុងការកែប្រែតម្លៃដោយមិនបាច់ជូនដំណឹងជាមុន។</p>
+
+            <h4 style="color: #2f3542; margin-top: 20px;">៣. ការរក្សាសិទ្ធិ</h4>
+            <p>រាល់រូបភាព ឡូហ្គោ និងខ្លឹមសារនៅលើវេបសាយនេះ គឺជាកម្មសិទ្ធិរបស់ **Darling Skincare**។ ហាមចម្លងដោយគ្មានការអនុញ្ញាត។</p>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="{{ url_for('contact') }}" style="color: #6a0dad; text-decoration: none; font-weight: bold;">
+                មានចម្ងល់បន្ថែម? ទាក់ទងមកយើងខ្ញុំ
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

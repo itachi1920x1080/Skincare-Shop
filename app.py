@@ -9,9 +9,7 @@ from db.Skincare_Shop_db import get_db_connection, init_db
 
 app = Flask(__name__)
 app.secret_key = "darling_secret_key"
-import os
 
-import os
 
 # Update to include the products subfolder
 UPLOAD_FOLDER = 'static/image/products'
@@ -104,25 +102,18 @@ def logout():
     session.clear()
     flash("អ្នកបានចាកចេញដោយជោគជ័យ!", "info")
     return redirect(url_for("index"))
-@app.route("/orders")
+@app.route('/orders')
 @login_required
 def orders():
     user_id = session.get('user_id')
     connection = get_db_connection()
     try:
         with connection.cursor(pymysql.cursors.DictCursor) as cursor:
-            # We JOIN 'users' so the shared _order_list.html template has the 'username' it expects
-            sql = """
-                SELECT orders.*, users.username 
-                FROM orders 
-                JOIN users ON orders.user_id = users.id 
-                WHERE orders.user_id = %s 
-                ORDER BY order_date DESC
-            """
+            # ប្រើ user_id ឱ្យត្រូវតាមរូបភាព
+            sql = "SELECT * FROM orders WHERE user_id = %s ORDER BY order_date DESC"
             cursor.execute(sql, (user_id,))
             user_orders = cursor.fetchall()
-            
-        return render_template("orders.html", orders=user_orders)
+        return render_template('orders.html', orders=user_orders)
     finally:
         connection.close()
 
@@ -180,7 +171,21 @@ def about_us():
 @app.route("/contact")
 def contact():
     return render_template('contact.html')
+@app.route('/faqs')
+def faqs():
+    # ត្រូវប្រាកដថាមានឯកសារ templates/faqs.html
+    return render_template('faqs.html')
+@app.route('/terms')
+def terms():
+    return render_template('legal/terms.html')
 
+@app.route('/privacy')
+def privacy():
+    return render_template('legal/privacy.html')
+
+@app.route('/refund')
+def refund():
+    return render_template('legal/refund.html')
 @app.route("/place-order", methods=["POST"])
 @login_required # Ensure user is logged in to buy
 def place_order():
@@ -212,16 +217,67 @@ def place_order():
         return jsonify({"success": False, "message": str(e)})
     finally:
         connection.close()
+# ៣. Route បង្ហាញវិក្កយបត្ររបស់ User (My Orders)
+@app.route('/my-orders')
+def show_orders():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+        
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    # ទាញយក Order របស់ User ដែលកំពុង Login
+    cursor.execute("SELECT * FROM orders WHERE user_id = %s ORDER BY order_date DESC", (session['user_id'],))
+    user_orders = cursor.fetchall()
+    connection.close()
+    return render_template('user_orders.html', orders=user_orders)
+@app.route('/invoice/<int:order_id>')
+@login_required
+def show_invoice(order_id):
+    connection = get_db_connection()
+    # ប្រើ DictCursor ដើម្បីឱ្យ HTML ស្គាល់អថេរដូចជា item.product_name
+    cursor = connection.cursor(pymysql.cursors.DictCursor)
+    
+    try:
+        # ១. ទាញយកព័ត៌មានទូទៅនៃ Order និងឈ្មោះអតិថិជន
+        cursor.execute("""
+            SELECT o.*, u.username as customer_name, u.email as customer_email 
+            FROM orders o 
+            JOIN users u ON o.user_id = u.id 
+            WHERE o.id = %s
+        """, (order_id,))
+        order = cursor.fetchone()
 
+        # ប្រសិនបើរកមិនឃើញ Order ឬមិនមែនជា Admin ហើយក៏មិនមែនជាម្ចាស់ Order
+        if not order or (session.get('role') != 'admin' and order['user_id'] != session.get('user_id')):
+            flash("អ្នកគ្មានសិទ្ធិមើលវិក្កយបត្រនេះទេ!", "danger")
+            return redirect(url_for('index'))
+
+        # ២. ទាញយកបញ្ជីទំនិញក្នុង Order នោះ (រួមទាំងរូបភាព និង Description)
+        cursor.execute("""
+            SELECT oi.*, p.name as product_name, p.image_filename, p.category 
+            FROM order_items oi 
+            JOIN products p ON oi.product_id = p.id 
+            WHERE oi.order_id = %s
+        """, (order_id,))
+        order_items = cursor.fetchall()
+
+        return render_template('invoice.html', order=order, order_items=order_items)
+        
+    finally:
+        connection.close()
+
+
+
+# --- Decorator សម្រាប់ឆែកសិទ្ធិ Admin ---
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        # Checks if the user is logged in AND has the 'admin' role
         if session.get('role') != 'admin':
             flash("សុំទោស! ទំព័រនេះសម្រាប់តែ Admin ប៉ុណ្ណោះ។", "danger")
             return redirect(url_for('index'))
         return f(*args, **kwargs)
     return decorated_function
+
 # ==========================================
 # 1. ADMIN DASHBOARD (Inventory)
 # ==========================================
@@ -230,31 +286,150 @@ def admin_required(f):
 def admin():
     connection = get_db_connection()
     try:
-        with connection.cursor(pymysql.cursors.DictCursor) as cursor:
-            # Fetch all products to list in the table
+        with connection.cursor() as cursor:
             cursor.execute("SELECT * FROM products ORDER BY id DESC")
             products = cursor.fetchall()
         return render_template('admin/dashboard.html', products=products)
     finally:
         connection.close()
 
+@app.route('/admin/add', methods=['GET', 'POST'])
+@admin_required
+def admin_add_product():
+    connection = get_db_connection()
+    # ប្រើ DictCursor ដើម្បីងាយស្រួលទាញឈ្មោះ Category
+    cursor = connection.cursor(pymysql.cursors.DictCursor)
+
+    if request.method == 'POST':
+        name = request.form.get('name')
+        description = request.form.get('description') # ចាប់យកការពិពណ៌នា
+        price = float(request.form.get('price', 0))
+        stock = int(request.form.get('stock', 0))
+        category = request.form.get('category')
+        file = request.files.get('image')
+        
+        filename = 'default.jpg'
+        if file and file.filename != '':
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        
+        try:
+            # ⚠️ ត្រូវតែថែម description និង %s មួយទៀតក្នុង SQL
+            sql = "INSERT INTO products (name, description, price, stock, image_filename, category) VALUES (%s, %s, %s, %s, %s, %s)"
+            cursor.execute(sql, (name, description, price, stock, filename, category))
+            
+            connection.commit()
+            flash("បន្ថែមទំនិញថ្មីជោគជ័យ!", "success")
+            connection.close()
+            return redirect(url_for('admin'))
+        except Exception as e:
+            flash(f"SQL Error: {e}", "danger")
+            # ប្រសិនបើមាន Error ក្នុង SQL លោកអ្នកនឹងឃើញសារច្បាស់ៗនៅទីនេះ
+
+    # សម្រាប់បង្ហាញ Form
+    try:
+        cursor.execute("SELECT category_name FROM category")
+        categories = [cat['category_name'] for cat in cursor.fetchall()]
+    except:
+        categories = [] # ការពារ Error បើគ្មានតារាង Category
+    finally:
+        connection.close()
+        
+    return render_template('admin/add_product.html', categories=categories)
 
 # ==========================================
-# 2. ADMIN ORDERS (Manage Customer Orders)
+# 3. ADMIN EDIT PRODUCT
 # ==========================================
+@app.route('/admin/edit/<int:product_id>', methods=['GET', 'POST'])
+@admin_required
+def edit_product(product_id):
+    connection = get_db_connection()
+    # ប្រើ DictCursor ដើម្បីងាយស្រួលហៅឈ្មោះកូឡោន
+    cursor = connection.cursor(pymysql.cursors.DictCursor)
+    
+    if request.method == 'POST':
+        name = request.form.get('name')
+        description = request.form.get('description') # ចាប់យកការពិពណ៌នាថ្មី
+        price = request.form.get('price')
+        stock = request.form.get('stock')
+        category = request.form.get('category')
+        file = request.files.get('image')
+
+        # ទាញយកឈ្មោះរូបភាពចាស់
+        cursor.execute("SELECT image_filename FROM products WHERE id=%s", (product_id,))
+        current_data = cursor.fetchone()
+        current_image = current_data['image_filename'] if current_data else 'default.jpg'
+        filename = current_image
+
+        if file and file.filename != '':
+            # លុបរូបភាពចាស់ពី Folder (លើកលែងតែរូបភាព default)
+            if current_image and current_image != 'default.jpg':
+                old_path = os.path.join(app.config['UPLOAD_FOLDER'], current_image)
+                if os.path.exists(old_path): os.remove(old_path)
+            
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+        # Update ទិន្នន័យរួមទាំង description
+        cursor.execute("""
+            UPDATE products 
+            SET name=%s, description=%s, price=%s, stock=%s, category=%s, image_filename=%s 
+            WHERE id=%s
+        """, (name, description, price, stock, category, filename, product_id))
+        
+        connection.commit()
+        connection.close()
+        flash("កែសម្រួលទំនិញជោគជ័យ!", "success")
+        return redirect(url_for('admin'))
+
+    # សម្រាប់បង្ហាញទិន្នន័យលើ Form (GET method)
+    cursor.execute("SELECT * FROM products WHERE id=%s", (product_id,))
+    product = cursor.fetchone()
+    
+    cursor.execute("SELECT category_name FROM category")
+    categories = [cat['category_name'] for cat in cursor.fetchall()]
+    connection.close()
+    
+    return render_template('admin/edit_product.html', product=product, categories=categories)
+# ==========================================
+# 4. ADMIN DELETE PRODUCT
+# ==========================================
+@app.route('/admin/delete/<int:product_id>', methods=['POST'])
+@admin_required
+def delete_product(product_id):
+    connection = get_db_connection()
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT image_filename FROM products WHERE id=%s", (product_id,))
+            row = cursor.fetchone()
+            if row and row['image_filename'] != 'default.jpg':
+                path = os.path.join(app.config['UPLOAD_FOLDER'], row['image_filename'])
+                if os.path.exists(path): os.remove(path)
+            
+            cursor.execute("DELETE FROM products WHERE id=%s", (product_id,))
+            connection.commit()
+            flash("លុបទំនិញជោគជ័យ!", "success")
+    finally:
+        connection.close()
+    return redirect(url_for('admin'))
+
+
+
+
+
+
+# --- សម្រាប់ Admin គ្រប់គ្រងការកុម្មង់ទាំងអស់ ---
 @app.route('/admin/orders')
 @admin_required
 def admin_orders():
     connection = get_db_connection()
     try:
         with connection.cursor(pymysql.cursors.DictCursor) as cursor:
-            # Join with users table to get the Customer Name (username)
-            # Note: Ensure your table uses 'user_id' or 'customer_id' consistently. 
-            # I am assuming 'customer_id' based on your previous snippet.
+            # កែពី o.customer_id ទៅជា o.user_id ឱ្យត្រូវតាមរូបភាព Database របស់អ្នក
             sql = """
-                SELECT o.*, u.username 
+                SELECT o.id, o.order_date, o.total_amount, o.status, u.username 
                 FROM orders o 
-                JOIN users u ON o.customer_id = u.id 
+                JOIN users u ON o.user_id = u.id 
                 ORDER BY o.order_date DESC
             """
             cursor.execute(sql)
@@ -264,42 +439,42 @@ def admin_orders():
         connection.close()
 
 
-# ==========================================
-# 3. UPDATE ORDER STATUS (Pending -> Completed)
-# ==========================================
+
 @app.route('/admin/order/update/<int:order_id>', methods=['POST'])
 @admin_required
 def update_order_status(order_id):
-    new_status = request.form.get('status')
+    # ប្រើ .strip() ដើម្បីធានាថាមិនមានចន្លោះទំនេរលើសដែលនាំឱ្យលើសទំហំ Column
+    new_status = request.form.get('status').strip() 
+    
     connection = get_db_connection()
     try:
         with connection.cursor() as cursor:
-            cursor.execute("UPDATE orders SET status=%s WHERE id=%s", (new_status, order_id))
+            # ធ្វើបច្ចុប្បន្នភាពស្ថានភាព
+            sql = "UPDATE orders SET status=%s WHERE id=%s"
+            cursor.execute(sql, (new_status, order_id))
             connection.commit()
-            flash(f"Order #{order_id} updated to {new_status}.", "success")
+            flash(f"Order #{order_id} ត្រូវបានប្តូរទៅជា {new_status}", "success")
     except Exception as e:
-        flash(f"Error updating order: {e}", "danger")
+        print(f"Error: {e}")
+        flash("មានបញ្ហាក្នុងការ Update ស្ថានភាព!", "danger")
     finally:
         connection.close()
     return redirect(url_for('admin_orders'))
 
 
-# ==========================================
-# 4. ADMIN ANALYTICS (Charts & Stats)
-# ==========================================
 @app.route('/admin/analytics')
 @admin_required
 def admin_analytics():
     connection = get_db_connection()
     try:
         with connection.cursor(pymysql.cursors.DictCursor) as cursor:
-            # A. General Stats (Total Revenue & Total Orders)
-            cursor.execute("SELECT SUM(total) as revenue, COUNT(id) as total_orders FROM orders")
+            # កែពី total ទៅជា total_amount ឱ្យត្រូវតាម Database របស់អ្នក
+            cursor.execute("SELECT SUM(total_amount) as revenue, COUNT(id) as total_orders FROM orders")
             stats = cursor.fetchone()
 
-            # B. Daily Sales (Last 7 Days) for the Graph
+            # កែពី total ទៅជា total_amount ក្នុងផ្នែក Sales Trend ដែរ
             cursor.execute("""
-                SELECT DATE(order_date) as date, SUM(total) as daily_revenue 
+                SELECT DATE(order_date) as date, SUM(total_amount) as daily_revenue 
                 FROM orders 
                 GROUP BY DATE(order_date) 
                 ORDER BY date DESC 
@@ -307,8 +482,8 @@ def admin_analytics():
             """)
             daily_sales = cursor.fetchall()
 
-            # C. Low Stock Alert (Products with less than 10 items)
-            cursor.execute("SELECT name, stock FROM products WHERE stock < 10 ORDER BY stock ASC")
+            # ផ្នែក Low Stock នៅរក្សាដដែល
+            cursor.execute("SELECT id,name,image_filename, stock FROM products WHERE stock < 10 ORDER BY stock ASC")
             low_stock = cursor.fetchall()
 
             return render_template('admin/analytics.html', 
@@ -318,123 +493,33 @@ def admin_analytics():
     finally:
         connection.close()
 
-
-# ==========================================
-# 5. ADD PRODUCT
-# ==========================================
-@app.route('/admin/add', methods=['GET', 'POST'])
-@admin_required
-def admin_add_product():
-    if request.method == 'POST':
-        name = request.form.get('name')
-        price = request.form.get('price')
-        stock = request.form.get('stock')
-        category = request.form.get('category')
-        
-        file = request.files.get('image')
-        filename = 'default.jpg' # Default image if none uploaded
-
-        if file and file.filename != '':
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        
-        connection = get_db_connection()
-        try:
-            with connection.cursor() as cursor:
-                # Note: Using 'image' column name based on your HTML
-                sql = "INSERT INTO products (name, price, stock, image, category) VALUES (%s, %s, %s, %s, %s)"
-                cursor.execute(sql, (name, price, stock, filename, category))
-                connection.commit()
-                flash("Product added successfully!", "success")
-                return redirect(url_for('admin_dashboard'))
-        except Exception as e:
-            flash(f"Error adding product: {e}", "danger")
-        finally:
-            connection.close()
-
-    return render_template('admin/add_product.html')
-
-
-# ==========================================
-# 6. EDIT PRODUCT
-# ==========================================
-@app.route('/admin/edit/<int:product_id>', methods=['GET', 'POST'])
-@admin_required
-def edit_product(product_id):
+# ៥. Route មើលលម្អិតវិក្កយបត្រ (Invoice Detail)
+@app.route('/invoice/<int:order_id>')
+def view_invoice(order_id):
     connection = get_db_connection()
-    try:
-        with connection.cursor(pymysql.cursors.DictCursor) as cursor:
-            if request.method == 'POST':
-                name = request.form.get('name')
-                price = request.form.get('price')
-                stock = request.form.get('stock')
-                category = request.form.get('category')
-                
-                file = request.files.get('image')
-                
-                # Get current image filename first
-                cursor.execute("SELECT image FROM products WHERE id=%s", (product_id,))
-                current_image = cursor.fetchone()['image']
-                filename = current_image
+    cursor = connection.cursor()
+    
+    # ទាញព័ត៌មាន Order
+    cursor.execute("SELECT o.*, u.username, u.email FROM orders o JOIN users u ON o.user_id = u.id WHERE o.id = %s", (order_id,))
+    order = cursor.fetchone()
+    
+    # ទាញទំនិញក្នុង Order នោះ
+    cursor.execute("""
+        SELECT oi.*, p.name as product_name, p.image_filename 
+        FROM order_items oi 
+        JOIN products p ON oi.product_id = p.id 
+        WHERE oi.order_id = %s
+    """, (order_id,))
+    items = cursor.fetchall()
+    
+    connection.close()
+    return render_template('invoice.html', order=order, order_items=items)
 
-                # If new file is uploaded, delete old one and save new one
-                if file and file.filename != '':
-                    # Delete old image (if it's not the default)
-                    if current_image and current_image != 'default.jpg':
-                        old_path = os.path.join(app.config['UPLOAD_FOLDER'], current_image)
-                        if os.path.exists(old_path):
-                            os.remove(old_path)
-                    
-                    # Save new image
-                    filename = secure_filename(file.filename)
-                    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                
-                # Update Database
-                sql = "UPDATE products SET name=%s, price=%s, stock=%s, category=%s, image=%s WHERE id=%s"
-                cursor.execute(sql, (name, price, stock, category, filename, product_id))
-                connection.commit()
-                
-                flash("Product updated successfully!", "success")
-                return redirect(url_for('admin_dashboard'))
-            
-            # GET request: Fetch product data to pre-fill the form
-            cursor.execute("SELECT * FROM products WHERE id=%s", (product_id,))
-            product = cursor.fetchone()
-            return render_template('admin/edit_product.html', product=product)
-            
-    finally:
-        connection.close()
+# developer
+@app.route('/developer')
+def developer():
+    return render_template('developer.html')
 
-
-# ==========================================
-# 7. DELETE PRODUCT
-# ==========================================
-@app.route('/admin/delete/<int:product_id>', methods=['POST'])
-@admin_required
-def delete_product(product_id):
-    connection = get_db_connection()
-    try:
-        with connection.cursor(pymysql.cursors.DictCursor) as cursor:
-            # Get image filename to delete from folder
-            cursor.execute("SELECT image FROM products WHERE id=%s", (product_id,))
-            row = cursor.fetchone()
-            
-            if row and row['image'] and row['image'] != 'default.jpg':
-                file_path = os.path.join(app.config['UPLOAD_FOLDER'], row['image'])
-                if os.path.exists(file_path):
-                    os.remove(file_path)
-            
-            # Delete from DB
-            cursor.execute("DELETE FROM products WHERE id=%s", (product_id,))
-            connection.commit()
-            flash("Product deleted successfully.", "success")
-            
-    except Exception as e:
-        flash(f"Error deleting product: {e}", "danger")
-    finally:
-        connection.close()
-        
-    return redirect(url_for('admin_dashboard'))
 
 if __name__ == "__main__":
     app.run(debug=True)

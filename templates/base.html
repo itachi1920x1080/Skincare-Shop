@@ -6,9 +6,47 @@
     <title>{% block title %}Darling Skincare{% endblock %}</title>
     
     <link rel="stylesheet" href="{{ url_for('static', filename='css/Style.css') }}">
-    
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        /* ✅ FIX: បង្ខំឱ្យ Dropdown ធ្លាក់ចុះក្រោមជាជួរឈរ (Vertical) */
+        .user-dropdown { position: relative; display: inline-block; }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background-color: white;
+            min-width: 220px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border-radius: 12px;
+            z-index: 1000;
+            padding: 10px 0;
+            border: 1px solid #eee;
+            flex-direction: column !important; 
+        }
+        .user-dropdown:hover .dropdown-content { 
+            display: flex !important; 
+            animation: slideUp 0.3s ease; 
+        }
+        .dropdown-content a {
+            color: #333;
+            padding: 12px 20px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            transition: 0.2s;
+            text-align: left;
+        }
+        .dropdown-content a:hover { background-color: #f8f5ff; color: #6a0dad; }
+        .admin-tools-label { padding: 8px 20px; font-size: 11px; color: #aaa; font-weight: bold; text-transform: uppercase; }
+        .divider { height: 1px; background: #eee; margin: 8px 0; }
+        .admin-label { background: #6a0dad; color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-left: 5px; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
 </head>
 <body>
 
@@ -19,25 +57,35 @@
         </div>
         
         <nav class="navlinks" id="main-navigation">
-            <ul class="drop" role="menubar" aria-label="Main Navigation">
-                <li role="none"><a href="{{ url_for('index') }}" role="menuitem">Home</a></li>
-                <li role="none"><a href="{{ url_for('products') }}" role="menuitem">Products</a></li>
-                <li role="none"><a href="{{ url_for('feedback') }}" role="menuitem">Feedback</a></li>
-                <li role="none"><a href="{{ url_for('about_us') }}" role="menuitem">About Us</a></li>
-                <li role="none"><a href="{{ url_for('contact') }}" role="menuitem">Contact</a></li>        
+            <ul class="drop">
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                <li><a href="{{ url_for('products') }}">Products</a></li>
+                <li><a href="{{ url_for('feedback') }}">Feedback</a></li>
+                <li><a href="{{ url_for('about_us') }}">About Us</a></li>
+                <li><a href="{{ url_for('contact') }}">Contact</a></li> 
                 
                 {% if session.get('user_id') %}
-                    <li><a href="{{ url_for('orders') }}">My Orders</a></li>
-                    
-                    {% if session.get('role') == 'admin' %}
-                        <li><a href="{{ url_for('admin') }}" style="color: #ffd700;">Dashboard</a></li>
-                        <li><a href="{{ url_for('admin_add_product') }}" style="color: #ffd700;">+ Product</a></li>
-                        <li><a href="{{ url_for('admin_analytics') }}" style="color: #ffd700;">Analytics</a></li>
-                    {% endif %}
-
-                    <li><a href="#" class="user-name">Welcome, {{ session.get('username') }}</a></li>
-                    <li><a href="{{ url_for('logout') }}" class="logout-btn">Logout</a></li>
-                
+                    <li class="user-dropdown">
+                        <a href="#" class="user-name" style="font-weight: bold; color: #6a0dad;">
+                            <i class="fas fa-user-circle"></i> {{ session.get('username') }}
+                            {% if session.get('role') == 'admin' %}<span class="admin-label">Admin</span>{% endif %}
+                        </a>
+                        <div class="dropdown-content">
+                            <a href="{{ url_for('show_orders') }}"><i class="fas fa-file-invoice"></i> My Orders</a>
+                            
+                            {% if session.get('role') == 'admin' %}
+                                <div class="divider"></div>
+                                <div class="admin-tools-label">Admin Tools</div>
+                                <a href="{{ url_for('admin') }}"><i class="fas fa-chart-line"></i> Dashboard</a>
+                                <a href="{{ url_for('admin_orders') }}"><i class="fas fa-tasks"></i> User Orders</a>
+                                <a href="{{ url_for('admin_add_product') }}"><i class="fas fa-plus-circle"></i> Add Product</a>
+                                <a href="{{ url_for('admin_analytics') }}"><i class="fas fa-chart-pie"></i> Analytics</a>
+                            {% endif %}
+                            
+                            <div class="divider"></div>
+                            <a href="{{ url_for('logout') }}" style="color: #ff4757;"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                        </div>
+                    </li>
                 {% else %}
                     <li><a href="{{ url_for('login') }}">Login</a></li>
                     <li><a href="{{ url_for('register') }}" class="nav-register">Register</a></li>
@@ -52,13 +100,13 @@
     </header>
 
     <main>
-        <div class="flash-container">
+        <div class="flash-container" style="max-width: 1200px; margin: 10px auto; padding: 0 20px;">
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     {% for category, message in messages %}
-                        <div class="flash-message {{ category }}">
+                        <div class="flash-message flash-{{ category }}" style="padding: 15px; margin-bottom: 10px; border-radius: 8px; background: {% if category == 'success' %}#d4edda{% else %}#f8d7da{% endif %}; color: {% if category == 'success' %}#155724{% else %}#721c24{% endif %}; position: relative;">
                             {{ message }}
-                            <span class="close-flash" onclick="this.parentElement.style.display='none';">&times;</span>
+                            <span class="close-btn" onclick="this.parentElement.style.display='none';" style="position: absolute; right: 15px; cursor: pointer;">&times;</span>
                         </div>
                     {% endfor %}
                 {% endif %}
@@ -74,9 +122,7 @@
                 <div class="newsletter-text">
                     <h2>Join our newsletter</h2>
                     <p>Get exclusive deals, skincare tips, and early access to sales.</p>
-                    <p class="privacy-note">We respect your inbox. Unsubscribe anytime.</p>
                 </div>
-                
                 <form class="newsletter-form" id="newsletterForm">
                     <input type="email" id="email-newsletter" placeholder="you@example.com" required>
                     <button type="submit" id="subscribeBtn">Subscribe</button>
@@ -84,14 +130,14 @@
             </div>
         </div>
 
-        <div class="footer-bottom-content" id="footer-links">
+        <div class="footer-bottom-content">
             <div class="footer-logo-col">
                 <span class="logo-text">Darling Store</span>
                 <p class="tagline">Unlock your skin's natural radiance.</p>
                 <div class="social-media">
-                    <a href="#"><i class="fab fa-facebook"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-tiktok"></i></a>
+                    <a href="https://www.facebook.com/darlingskincare"><i class="fab fa-facebook"></i></a>
+                    <a href="https://www.instagram.com/darlingskincare"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.tiktok.com/@darlingskincare"><i class="fab fa-tiktok"></i></a>
                 </div>
             </div>
 
@@ -100,27 +146,28 @@
                     <h4>Shop</h4>
                     <ul>
                         <li><a href="{{ url_for('products') }}">All Products</a></li>
-                        <li><a href="#">Best Sellers</a></li>
+                        <li><a href="{{url_for('contact')}}">Contact Us</a></li>
+                        <li><a href="{{ url_for('faqs') }}">FAQs</a></li>
                     </ul>
                 </div>
+                <div class="footer-contact">
+                    <h4>Contact Info</h4>
+                    <p><i class="fas fa-map-marker-alt"></i> ភ្នំពេញ, ប្រទេសកម្ពុជា</p>
+                    <p><i class="fas fa-envelope"></i> info@darlingskincare.com</p>
+                </div>
                 <div class="footer-links">
-                    <h4>Support</h4>
+                    <h4>Legal</h4>
                     <ul>
-                        <li><a href="#">Contact Us</a></li>
-                        <li><a href="#">FAQs</a></li>
+                        <li><a href="{{ url_for('terms') }}">Terms of Service</a></li>
+                        <li><a href="{{ url_for('privacy') }}">Privacy Policy</a></li>
+                        <li><a href="{{ url_for('refund') }}">Refund Policy</a></li>
                     </ul>
                 </div>
             </div>
         </div>
 
-        <div class="copyright">
-            <div class="copyright-content">
-                <p>&copy; 2026 Darling Skincare. All rights reserved. |
-                    <a href="#">Privacy Policy</a> |
-                    <a href="#">Terms of Service</a>
-                </p>
-                <p class="credit">Team build project</p>
-            </div>
+        <div class="copyright" style="text-align: center; padding: 20px; border-top: 1px solid #eee;">
+            <p>&copy; 2026 Darling Skincare. All rights reserved. | Team build project</p>
         </div>
     </footer>
 
@@ -128,9 +175,7 @@
         <div class="cart-content">
             <div class="close-btn" id="close-cart">&times;</div>
             <h2>Your Shopping Cart</h2>
-            
             <div id="cart-items" class="cart-items"></div>
-
             <div class="cart-summary">
                 <div class="summary-line total">
                     <span>Total:</span>
@@ -147,18 +192,13 @@
             <div class="qr-modal-inner">
                 <h2 class="qr-title">Scan to Pay</h2>
                 <img src="{{ url_for('static', filename='image/bank-qr.jpg' ) }}" alt="ABA Pay QR Code" class="qr-code-image">
-                <p class="scan-text">Please scan the QR code to complete your transfer.</p>
                 <p class="total-display">Total to Pay: <span id="pay-total">$0.00</span></p>
             </div>
         </div>
     </div>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    
     <script src="{{ url_for('static', filename='js/Style-js.js') }}"></script>
-    
-    <script>
-        AOS.init({ duration: 800, once: true }); 
-    </script>
+    <script> AOS.init({ duration: 800, once: true }); </script>
 </body>
 </html>
