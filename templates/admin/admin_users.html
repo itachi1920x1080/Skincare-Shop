@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="admin-container" style="padding: 40px 20px; max-width: 1200px; margin: auto;">
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}" style="padding: 15px; border-radius: 10px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; border-left: 5px solid {% if category == 'warning' %}#f1c40f{% elif category == 'success' %}#2ecc71{% else %}#e74c3c{% endif %}; background: {% if category == 'warning' %}#fff9e6{% elif category == 'success' %}#f0fff4{% else %}#fff5f5{% endif %}; color: #333;">
+                <i class="fas {% if category == 'warning' %}fa-exclamation-triangle{% elif category == 'success' %}fa-check-circle{% else %}fa-times-circle{% endif %}"></i>
+                {{ message }}
+            </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <h2 style="color: #6a0dad; margin: 0;"><i class="fas fa-users-cog"></i> User Management</h2>
+        
+        <div style="position: relative;">
+            <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #aaa;"></i>
+            <input type="text" id="userSearch" onkeyup="searchTable()" placeholder="ស្វែងរកឈ្មោះ ឬអីមែល..." 
+                   style="padding: 10px 20px 10px 40px; border-radius: 20px; border: 1px solid #ddd; width: 300px; outline: none;">
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table id="userTable" style="width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+            <thead>
+                <tr style="background: #6a0dad; color: white; text-align: left;">
+                    <th style="padding: 15px;">ID</th>
+                    <th style="padding: 15px;">ឈ្មោះ</th>
+                    <th style="padding: 15px;">អីមែល</th>
+                    <th style="padding: 15px;">តួនាទី</th>
+                    <th style="padding: 15px;">សកម្មភាព</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr style="border-bottom: 1px solid #eee; transition: 0.2s;" onmouseover="this.style.background='#f9f9f9'" onmouseout="this.style.background='white'">
+                    <td style="padding: 15px; color: #888;">#{{ user.id }}</td>
+                    
+                    <td style="padding: 15px;">
+                        <span style="font-weight: bold; color: #333;">{{ user.username }}</span>
+                        
+                        {% if user.order_count > 0 %}
+                            <span title="User នេះមាន {{ user.order_count }} orders" style="font-size: 0.75rem; background: #fff3cd; color: #856404; padding: 2px 8px; border-radius: 10px; margin-left: 5px;">
+                                <i class="fas fa-shopping-cart" style="font-size: 0.7rem;"></i> {{ user.order_count }}
+                            </span>
+                        {% endif %}
+                    </td>
+                    
+                    <td style="padding: 15px; color: #555;">{{ user.email }}</td>
+                    
+                    <td style="padding: 15px;">
+                        <form action="{{ url_for('update_role', user_id=user.id) }}" method="POST">
+                            <select name="role" onchange="this.form.submit()" 
+                                    style="padding: 5px 10px; border-radius: 5px; border: 1px solid #ddd; cursor: pointer; 
+                                           background: {% if user.role == 'admin' %}#ffeaa7{% else %}#dfe6e9{% endif %};">
+                                <option value="user" {% if user.role == 'user' %}selected{% endif %}>User</option>
+                                <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Admin</option>
+                            </select>
+                        </form>
+                    </td>
+                    
+                    <td style="padding: 15px;">
+                        <form action="{{ url_for('delete_user', user_id=user.id) }}" method="POST" onsubmit="return confirm('តើអ្នកពិតជាចង់លុប {{ user.username }} មែនទេ?');">
+                            
+                            {% if user.order_count > 0 %}
+                                <button type="submit" style="color: #f1c40f; border: none; background: none; cursor: pointer;" title="ប្រយ័ត្ន! User នេះមាន Order ជាប់ក្នុងប្រព័ន្ធ">
+                                    <i class="fas fa-exclamation-circle"></i> លុប
+                                </button>
+                            {% else %}
+                                <button type="submit" style="color: #d63031; border: none; background: none; cursor: pointer;" title="លុបអ្នកប្រើប្រាស់">
+                                    <i class="fas fa-user-minus"></i> លុប
+                                </button>
+                            {% endif %}
+                            
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<script>
+function searchTable() {
+    let input = document.getElementById("userSearch").value.toLowerCase();
+    let rows = document.getElementById("userTable").getElementsByTagName("tr");
+    for (let i = 1; i < rows.length; i++) {
+        rows[i].style.display = rows[i].innerText.toLowerCase().includes(input) ? "" : "none";
+    }
+}
+</script>
+{% endblock %}

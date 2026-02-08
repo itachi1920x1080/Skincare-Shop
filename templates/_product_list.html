@@ -1,33 +1,48 @@
 <div id="product-grid" class="product-grid">
     {% if products %}
         {% for product in products %}
-        <div class="product-card" data-category="{{ product.category }}" data-aos="fade-up">
+        {# 💡 សំខាន់៖ បំប្លែង category ទៅជា slug (អក្សរតូច និងគ្មានដកឃ្លា) ដើម្បីឱ្យ JS filter ស្គាល់ #}
+        <div class="product-card" 
+             data-category="{{ product.category.lower().replace(' ', '-') if product.category else '' }}" 
+             data-aos="fade-up">
+            
             <div class="product-image">
-                <img src="{{ url_for('static', filename='image/products/' + product.image_filename) if product.image_filename else url_for('static', filename='image/default-skin.jpg') }}" alt="{{ product.name }}">
+                <img src="{{ url_for('static', filename='image/products/' + product.image_filename) if product.image_filename else url_for('static', filename='image/default-skin.jpg') }}" 
+                     alt="{{ product.name }}"
+                     loading="lazy">
             </div>
+
             <div class="product-info">
                 <span class="category-tag">{{ product.category }}</span>
+                {# 💡 Class "p-name" សម្រាប់មុខងារ Search #}
                 <h3 class="p-name">{{ product.name }}</h3>
                 
                 <p class="p-description" style="font-size: 0.85rem; color: #777; margin-bottom: 12px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-                    {{ product.description if product.description else "No description available." }}
+                    {{ product.description if product.description else "មិនមានការពិពណ៌នាឡើយ។" }}
                 </p>
 
-                <p class="p-price">${{ "%.2f"|format(product.price) }}</p>
+                {# 💡 Class "p-price" សម្រាប់មុខងារ Sort តម្លៃ #}
+                <p class="p-price">
+                    ${{ "%.2f"|format(product.price|default(0)) }}
+                </p>
                 
-                {% if product.stock > 0 %}
+                {% if product.stock|default(0) > 0 %}
                     <button class="add-to-cart-btn" 
                             onclick="addToCart('{{ product.id }}', '{{ product.name }}', {{ product.price }}, '{{ product.image_filename }}')">
-                        Add to Cart
+                        <i class="fas fa-cart-plus"></i> Add to Cart
                     </button>
                 {% else %}
-                    <button class="out-of-stock" disabled>Sold Out</button>
+                    <button class="out-of-stock" disabled 
+                            style="background: #ccc; cursor: not-allowed; width: 100%; padding: 10px; border: none; border-radius: 8px; color: #666; font-weight: bold;">
+                        <i class="fas fa-times-circle"></i> Sold Out
+                    </button>
                 {% endif %}
             </div>
         </div>
         {% endfor %}
     {% else %}
-        <div class="no-products">
+        <div class="no-products" style="grid-column: 1 / -1; text-align: center; padding: 50px;">
+            <i class="fas fa-box-open" style="font-size: 3rem; color: #ddd; margin-bottom: 15px; display: block;"></i>
             <p>បច្ចុប្បន្នមិនទាន់មានផលិតផលនៅឡើយទេ។</p>
         </div>
     {% endif %}

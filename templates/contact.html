@@ -4,34 +4,44 @@
 
 {% block content %}
 <section class="auth-container" style="flex-direction: column; padding: 60px 20px;">
-    <div class="auth-form" data-aos="zoom-in" style="max-width: 600px;">
-        <h2>Get In Touch</h2>
-        <p style="margin-bottom: 30px;">Have a question about our products or your order?</p>
+    <div class="auth-form" data-aos="zoom-in" style="max-width: 600px; margin: auto;">
+        <h2 style="color: #6a0dad; margin-bottom: 10px;">Get In Touch</h2>
+        <p style="margin-bottom: 30px; color: #666;">មានចម្ងល់អំពីផលិតផល ឬការបញ្ជាទិញមែនទេ? ផ្ញើសារមកកាន់យើងឥឡូវនេះ!</p>
 
-        <div style="text-align: left; margin-bottom: 30px; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 20px;">
-            <p><i class="fas fa-envelope"></i> <strong>Email:</strong> support@darlingstore.com</p>
-            <p><i class="fas fa-phone"></i> <strong>Phone:</strong> +855 12 345 678</p>
-            <p><i class="fas fa-map-marker-alt"></i> <strong>Location:</strong> Phnom Penh, Cambodia</p>
+        <div class="contact-info" style="text-align: left; margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 20px;">
+            <p style="margin: 5px 0;"><i class="fas fa-envelope" style="color: #6a0dad;"></i> <strong>Email:</strong> support@darlingstore.com</p>
+            <p style="margin: 5px 0;"><i class="fas fa-phone" style="color: #6a0dad;"></i> <strong>Phone:</strong> +855 12 345 678</p>
+            <p style="margin: 5px 0;"><i class="fas fa-map-marker-alt" style="color: #6a0dad;"></i> <strong>Location:</strong> Phnom Penh, Cambodia</p>
         </div>
 
-        <form action="#" method="POST">
-            <div class="input-group">
-                <label>Full Name</label>
-                <input type="text" placeholder="Your Name" required>
+        <form action="{{ url_for('contact') }}" method="POST">
+            <div class="input-group" style="margin-bottom: 15px; text-align: left;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Full Name</label>
+                <input type="text" name="name" placeholder="ឈ្មោះរបស់អ្នក" required 
+                       style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; outline: none;">
             </div>
-            <div class="input-group">
-                <label>Subject</label>
-                <select style="width: 100%; padding: 12px; border-radius: 10px; background: rgba(255,255,255,0.15); color: rgb(168, 144, 144); border: 1px solid rgba(255,255,255,0.3);">
-                    <option value="order">Order Inquiry</option>
-                    <option value="product">Product Advice</option>
-                    <option value="other">Other</option>
-                </select>
+
+            <div class="input-group" style="margin-bottom: 15px; text-align: left;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Email Address</label>
+                <input type="email" name="email" placeholder="example@mail.com" required 
+                       style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; outline: none;">
             </div>
-            <div class="input-group">
-                <label>Message</label>
-                <textarea rows="4" style="width: 100%; border-radius: 10px; padding: 12px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: white; outline: none;"></textarea>
+
+            <div class="input-group" style="margin-bottom: 15px; text-align: left;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Subject</label>
+                <input type="text" name="subject" placeholder="ប្រធានបទនៃសារ" required 
+                       style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; outline: none;">
             </div>
-            <button type="submit">SEND MESSAGE</button>
+
+            <div class="input-group" style="margin-bottom: 20px; text-align: left;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Message</label>
+                <textarea name="message" rows="5" placeholder="សរសេរសាររបស់អ្នកនៅទីនេះ..." required 
+                          style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; outline: none; resize: vertical;"></textarea>
+            </div>
+
+            <button type="submit" style="width: 100%; padding: 15px; background: #6a0dad; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s;">
+                <i class="fas fa-paper-plane"></i> SEND MESSAGE
+            </button>
         </form>
     </div>
 </section>

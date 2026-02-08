@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}Admin - Newsletter Subscribers{% endblock %}
+
+{% block content %}
+<section class="admin-container" style="padding: 40px 20px; max-width: 1000px; margin: auto;">
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}" style="padding: 15px; border-radius: 10px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; border-left: 5px solid {% if category == 'success' %}#2ecc71{% else %}#e74c3c{% endif %}; background: #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
+                <i class="fas {% if category == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i> {{ message }}
+            </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px;">
+        <h2 data-aos="fade-right" style="color: #6a0dad; margin: 0;">
+            <i class="fas fa-envelope-open-text"></i> Subscribers List 
+            <span style="font-size: 0.9rem; background: #f3e5f5; color: #6a0dad; padding: 2px 10px; border-radius: 15px; vertical-align: middle;">
+                {{ subscribers|length }}
+            </span>
+        </h2>
+
+        <div data-aos="fade-left" style="display: flex; gap: 10px;">
+            <a href="{{ url_for('export_subscribers') }}" 
+               style="text-decoration: none; background: #27ae60; color: white; padding: 10px 20px; border-radius: 20px; font-weight: bold; box-shadow: 0 4px 10px rgba(39, 174, 96, 0.3); transition: 0.3s; display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-file-excel"></i> Export CSV
+            </a>
+
+            <button onclick="copyAllEmails()" style="background: #6a0dad; color: white; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 10px rgba(106, 13, 173, 0.3); display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-copy"></i> Copy All
+            </button>
+        </div>
+    </div>
+
+    <div class="table-responsive" data-aos="fade-up">
+        <table style="width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 20px rgba(0,0,0,0.08);">
+            <thead>
+                <tr style="background: linear-gradient(90deg, #6a0dad, #8e44ad); color: white; text-align: left;">
+                    <th style="padding: 18px;">ID</th>
+                    <th style="padding: 18px;">Email Address</th>
+                    <th style="padding: 18px;">Date Joined</th>
+                    <th style="padding: 18px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sub in subscribers %}
+                <tr style="border-bottom: 1px solid #f0f0f0; transition: 0.2s;" onmouseover="this.style.background='#fcf9ff'" onmouseout="this.style.background='white'">
+                    <td style="padding: 15px; color: #888;">#{{ sub.id }}</td>
+                    
+                    <td style="padding: 15px;">
+                        <span id="email-{{ sub.id }}" style="font-weight: 600; color: #333;">{{ sub.email }}</span>
+                    </td>
+                    
+                    <td style="padding: 15px; color: #666;">
+                        <i class="far fa-calendar-alt" style="margin-right: 5px; color: #aaa;"></i> {{ sub.created_at }}
+                    </td>
+                    
+                    <td style="padding: 15px;">
+                        <a href="mailto:{{ sub.email }}" title="Send Email" 
+                           style="display: inline-block; background: #e3f2fd; color: #2196f3; padding: 8px; border-radius: 50%; width: 35px; height: 35px; text-align: center; line-height: 20px; margin-right: 5px; transition: 0.3s;">
+                            <i class="fas fa-paper-plane" style="font-size: 0.9rem;"></i>
+                        </a>
+
+                        <button onclick="copyToClipboard('{{ sub.email }}')" title="Copy Email" 
+                                style="background: #f3e5f5; color: #6a0dad; border: none; padding: 8px; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; transition: 0.3s;">
+                            <i class="fas fa-copy" style="font-size: 0.9rem;"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" style="padding: 40px; text-align: center; color: #999;">
+                        <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.3;"></i><br>
+                        មិនទាន់មានអ្នក Subscribe នៅឡើយទេ។
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<script>
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(function() {
+            alert("Copied: " + text);
+        }, function(err) {
+            console.error('Could not copy text: ', err);
+        });
+    }
+
+    function copyAllEmails() {
+        let emails = [];
+        {% for sub in subscribers %}
+            emails.push("{{ sub.email }}");
+        {% endfor %}
+        
+        if(emails.length > 0) {
+            let emailString = emails.join(', ');
+            navigator.clipboard.writeText(emailString).then(function() {
+                alert("បានចម្លងអីមែលចំនួន " + emails.length + " ទុកក្នុង Clipboard!");
+            });
+        } else {
+            alert("មិនមានអីមែលដើម្បីចម្លងទេ!");
+        }
+    }
+</script>
+
+<style>
+    a[href^="mailto"]:hover { background: #2196f3 !important; color: white !important; }
+    button[title="Copy Email"]:hover { background: #6a0dad !important; color: white !important; }
+</style>
+
+{% endblock %}

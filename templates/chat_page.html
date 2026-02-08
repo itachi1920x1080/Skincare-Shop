@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block title %}Chat with Us - Darling Skincare{% endblock %}
+
+{% block content %}
+<div class="chat-page-container">
+    <div class="chat-window">
+        <div class="chat-header">
+            <div class="chat-title">
+                <i class="fas fa-robot"></i> Darling Assistant
+            </div>
+        </div>
+
+        <div class="chat-body" id="chatBody">
+            <div class="message bot-message">
+                សួស្តី! 👋 តើមានអ្វីឱ្យខ្ញុំជួយទាក់ទងនឹងផលិតផល Skincare ទេ?
+            </div>
+            <div class="quick-replies">
+                <button onclick="sendQuickReply('show product')">🛍️ មើលផលិតផល</button>
+                <button onclick="sendQuickReply('price')">💲 តម្លៃប៉ុន្មាន?</button>
+                <button onclick="sendQuickReply('location')">📍 ទីតាំងនៅឯណា?</button>
+                <button onclick="sendQuickReply('delivery')">🚚 សេវាដឹកជញ្ជូន</button>
+                <button onclick="sendQuickReply('contact')">📞 ទាក់ទងយើង</button>
+                <button onclick="sendQuickReply('about')">🙋 អំពី Darling Skincare</button>
+                <button onclick="sendQuickReply('privacy')">🔒 ឯកជនភាព</button>
+                <button onclick="sendQuickReply('terms')">📜 លក្ខខណ្ឌ</button>
+                <button onclick="sendQuickReply('cancel')">🚫 បោះបង់ការកុម្ម៉ង់</button>
+                <button onclick="sendQuickReply('partner')">🤝 ដៃគូដឹកជញ្ជូន</button>
+                <button onclick="sendQuickReply('website')">🌐 Website</button>
+            </div>
+        </div>
+        <a ></a>
+        <div class="chat-footer">
+            <input type="text" id="chatInput" placeholder="សរសេរសារ..." onkeypress="handleEnter(event)">
+            <button onclick="sendMessage()">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Layout ពេញអេក្រង់ */
+    .chat-page-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh; 
+        background-color: #f4f4f4;
+        padding: 20px;
+    }
+
+    /* ប្រអប់ Chat */
+    .chat-window {
+        width: 100%;
+        max-width: 600px; /* ដាក់ធំបន្តិចឱ្យសមនឹងអេក្រង់ */
+        height: 650px;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .chat-header { 
+        background: #6a0dad; 
+        color: white; 
+        padding: 20px; 
+        font-size: 1.2rem; 
+        font-weight: bold; 
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .chat-body { 
+        flex: 1; 
+        padding: 20px; 
+        overflow-y: auto; 
+        background: #f8f9fa; 
+        display: flex; 
+        flex-direction: column; 
+        gap: 15px; 
+    }
+
+    .message { 
+        max-width: 75%; 
+        padding: 12px 18px; 
+        border-radius: 20px; 
+        line-height: 1.5; 
+        word-wrap: break-word;
+    }
+
+    .bot-message { 
+        background: #e9ecef; 
+        color: #333; 
+        align-self: flex-start; 
+        border-bottom-left-radius: 5px; 
+    }
+
+    .user-message { 
+        background: #6a0dad; 
+        color: white; 
+        align-self: flex-end; 
+        border-bottom-right-radius: 5px; 
+    }
+
+    .chat-footer { 
+        padding: 15px; 
+        border-top: 1px solid #eee; 
+        display: flex; 
+        gap: 10px; 
+        background: white; 
+    }
+
+    .chat-footer input { 
+        flex: 1; 
+        border: 1px solid #ddd; 
+        border-radius: 25px; 
+        padding: 12px 20px; 
+        outline: none; 
+        font-size: 1rem;
+    }
+
+    .chat-footer button { 
+        background: #6a0dad; 
+        color: white; 
+        border: none; 
+        width: 45px; 
+        height: 45px; 
+        border-radius: 50%; 
+        cursor: pointer; 
+        transition: 0.2s; 
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .chat-footer button:hover {
+        background: #580b94;
+    }
+
+    .typing { 
+        font-style: italic; 
+        color: #888; 
+        margin-left: 20px; 
+        margin-bottom: 10px; 
+        font-size: 0.9rem; 
+    }
+</style>
+
+<script>
+    function handleEnter(event) { 
+        if (event.key === "Enter") {
+            sendMessage();
+        }
+    }
+
+    function sendMessage() {
+        let inputField = document.getElementById("chatInput");
+        let message = inputField.value.trim();
+        if (message === "") return;
+
+        // 1. បង្ហាញសារ User
+        addMessage(message, "user");
+        inputField.value = "";
+
+        // 2. បង្ហាញសញ្ញា Typing...
+        let chatBody = document.getElementById("chatBody");
+        let loadingDiv = document.createElement("div");
+        loadingDiv.className = "typing";
+        loadingDiv.id = "typingIndicator";
+        loadingDiv.innerText = "Darling is typing...";
+        chatBody.appendChild(loadingDiv);
+        chatBody.scrollTop = chatBody.scrollHeight;
+
+        // 3. ហៅទៅ Python (Fetch API)
+        fetch('/get_bot_response', {
+            method: 'POST',
+            body: JSON.stringify({ msg: message }),
+            headers: { 'Content-Type': 'application/json' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            // លុបសញ្ញា Typing ចេញ
+            let loader = document.getElementById("typingIndicator");
+            if(loader) loader.remove();
+            
+            // បង្ហាញសារ Bot
+            addMessage(data.response, "bot");
+        })
+        .catch(error => {
+            let loader = document.getElementById("typingIndicator");
+            if(loader) loader.remove();
+            addMessage("សូមអភ័យទោស មានបញ្ហាបច្ចេកទេស។", "bot");
+            console.error(error);
+        });
+    }
+
+    function addMessage(text, sender) {
+        let chatBody = document.getElementById("chatBody");
+        let div = document.createElement("div");
+        div.classList.add("message");
+        div.classList.add(sender === "user" ? "user-message" : "bot-message");
+        div.innerText = text;
+        chatBody.appendChild(div);
+        
+        // Scroll ចុះក្រោម
+        chatBody.scrollTop = chatBody.scrollHeight;
+    }
+    // Function សម្រាប់ពេលចុចលើប៊ូតុងសំណួរ
+function sendQuickReply(text) {
+    // ១. ដាក់អក្សរចូលក្នុងប្រអប់ Input
+    document.getElementById("chatInput").value = text;
+    
+    // ២. ហៅ Function ផ្ញើសារតែម្តង
+    sendMessage();
+}
+</script>
+{% endblock %}

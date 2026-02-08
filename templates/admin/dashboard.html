@@ -1,42 +1,159 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+
+{% block title %}Admin - Product Inventory{% endblock %}
 
 {% block content %}
-<div class="admin-container" style="padding: 20px;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h2>Product Inventory</h2>
-        <a href="{{ url_for('admin_add_product') }}" style="background: #000; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">+ Add Product</a>
+<section class="admin-container">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div id="flash-messages">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    <i class="fas {% if category == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i> {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="admin-header">
+        <h2 data-aos="fade-right" style="color: #6a0dad; margin: 0; font-weight: bold;">
+            <i class="fas fa-boxes"></i> Product Inventory
+        </h2>
+
+        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+            
+            <div class="search-wrapper">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="productSearch" class="search-input" onkeyup="searchTable()" placeholder="Search products...">
+            </div>
+
+            <form action="{{ url_for('cleanup_hidden_products') }}" method="POST" onsubmit="return confirm('តើអ្នកចង់លុបផលិតផលដែលលាក់ (Hidden) ចោលទាំងអស់មែនទេ? (ផលិតផលជាប់ Order នឹងមិនលុបទេ)');">
+                <button type="submit" style="background: #e74c3c; color: white; padding: 10px 15px; border: none; border-radius: 25px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px; box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);">
+                    <i class="fas fa-recycle"></i> Cleanup
+                </button>
+            </form>
+
+            <a href="{{ url_for('admin_add_product') }}" class="btn-add" data-aos="fade-left">
+                <i class="fas fa-plus-circle"></i> Add Product
+            </a>
+        </div>
     </div>
 
-    <table style="width: 100%; border-collapse: collapse; background: #fff;">
-        <thead>
-            <tr style="background: #f4f4f4; border-bottom: 2px solid #ddd;">
-                <th style="padding: 12px; text-align: left;">Image</th>
-                <th style="padding: 12px; text-align: left;">Name</th>
-                <th style="padding: 12px; text-align: left;">Price</th>
-                <th style="padding: 12px; text-align: left;">Stock</th>
-                <th style="padding: 12px; text-align: left;">Category</th>
-                <th style="padding: 12px; text-align: left;">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for product in products %}
-            <tr style="border-bottom: 1px solid #eee;">
-                <td style="padding: 10px;">
-                    <img src="{{ url_for('static', filename='image/products/' + product.image_filename) }}" width="50" style="border-radius: 4px;">
-                </td>
-                <td style="padding: 10px;">{{ product.name }}</td>
-                <td style="padding: 10px;">${{ "%.2f"|format(product.price) }}</td>
-                <td style="padding: 10px;">{{ product.stock }}</td>
-                <td style="padding: 10px;">{{ product.category }}</td>
-                <td style="padding: 10px;">
-                    <a href="{{ url_for('edit_product', product_id=product.id) }}" style="color: blue; text-decoration: none; margin-right: 10px;">Edit</a>
-                    <form action="{{ url_for('delete_product', product_id=product.id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure?');">
-                        <button type="submit" style="color: red; border: none; background: none; cursor: pointer;">Delete</button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+    <div class="table-responsive" data-aos="fade-up">
+        <table id="productTable" class="inventory-table">
+            <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td>
+                        <img src="{{ url_for('static', filename='image/products/' + product.image_filename) }}" 
+                             alt="{{ product.name }}" class="img-thumb">
+                    </td>
+                    
+                    <td>
+                        <div style="font-weight: 600; color: #333;">{{ product.name }}</div>
+                        {% if product.is_hidden %}
+                            <span class="badge-hidden" style="background: #e74c3c; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem;">Hidden</span>
+                        {% endif %}
+                    </td>
+                    
+                    <td>
+                        <span class="badge-cat">{{ product.category }}</span>
+                    </td>
+
+                    <td style="color: #27ae60; font-weight: bold;">
+                        ${{ "%.2f"|format(product.price) }}
+                    </td>
+
+                    <td>
+                        {% if product.stock <= 5 %}
+                            <span class="stock-low">
+                                <i class="fas fa-exclamation-triangle" style="font-size: 0.8rem;"></i> {{ product.stock }}
+                            </span>
+                        {% else %}
+                            <span class="stock-ok">{{ product.stock }}</span>
+                        {% endif %}
+                    </td>
+
+                    <td style="white-space: nowrap;">
+                        <a href="{{ url_for('edit_product', product_id=product.id) }}" title="Edit" class="action-btn btn-edit">
+                            <i class="fas fa-pen" style="font-size: 0.9rem;"></i>
+                        </a>
+
+                        {% if not product.is_hidden %}
+                            <form action="{{ url_for('delete_product', product_id=product.id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete (hide) {{ product.name }}?');">
+                                <button type="submit" title="Delete (Hide)" class="action-btn btn-delete">
+                                    <i class="fas fa-trash" style="font-size: 0.9rem;"></i>
+                                </button>
+                            </form>
+                        {% else %}
+                            <form action="{{ url_for('restore_product', product_id=product.id) }}" method="POST" style="display: inline;">
+                                <button type="submit" title="Restore (Show)" style="background: #e1ffed; color: #27ae60; border: none; padding: 8px; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-undo"></i>
+                                </button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" style="padding: 40px; text-align: center; color: #999;">
+                        <i class="fas fa-box-open" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.3;"></i><br>
+                        No products found. Start by adding one!
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<script>
+    // 1. Search Table Function
+    function searchTable() {
+        let input = document.getElementById("productSearch").value.toLowerCase();
+        let rows = document.getElementById("productTable").getElementsByTagName("tr");
+        
+        // Start from 1 to skip Header
+        for (let i = 1; i < rows.length; i++) {
+            let nameCell = rows[i].getElementsByTagName("td")[1];
+            let categoryCell = rows[i].getElementsByTagName("td")[2];
+            
+            if (nameCell || categoryCell) {
+                let nameText = nameCell.textContent || nameCell.innerText;
+                let categoryText = categoryCell.textContent || categoryCell.innerText;
+                
+                if (nameText.toLowerCase().indexOf(input) > -1 || categoryText.toLowerCase().indexOf(input) > -1) {
+                    rows[i].style.display = "";
+                } else {
+                    rows[i].style.display = "none";
+                }
+            }       
+        }
+    }
+
+    // 2. Auto-dismiss Flash Messages (3 seconds)
+    setTimeout(function() {
+        let alerts = document.querySelectorAll('.alert');
+        alerts.forEach(function(alert) {
+            alert.style.transition = "opacity 0.6s ease";
+            alert.style.opacity = "0";
+            setTimeout(function() {
+                alert.style.display = "none";
+            }, 600);
+        });
+    }, 3000);
+</script>
+
 {% endblock %}

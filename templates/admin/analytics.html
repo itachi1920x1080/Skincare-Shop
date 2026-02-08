@@ -46,10 +46,14 @@
                         <strong style="color: #d9534f; font-size: 1.1rem;">{{ item.stock }}</strong>
                         <span style="display: block; font-size: 0.75rem; color: #d9534f; font-weight: bold;">ITEMS LEFT</span>
                     </div>
+                    <div style="texxt-align: right;">
+                        <a href="{{ url_for('edit_product', product_id=item.id) }}" class="view-btn" style="width: 10px;">👁️</a>
+                    </div>
                 </li>
                 {% endfor %}
             </ul>
         </div>
+
     </div>
 </div>
 

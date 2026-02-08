@@ -1,9 +1,33 @@
 {% extends "base.html" %}
 
 {% block title %}Our Products - Darling Skincare{% endblock %}
-
 {% block content %}
+
 <section class="products-section">
-    {% include '_product_list.html' %}
+    <div class="filter-controls">
+        
+        <input type="text" id="productSearch" class="searcher" placeholder="ស្វែងរកផលិតផល..." onkeyup="filterProducts()">
+
+        <select id="category-filter" onchange="filterProducts()" class="Category-Filter">
+            <option value="all">All Categories</option>
+            {% for cat in categories %}
+                <option value="{{ cat.lower().replace(' ', '-') }}">{{ cat }}</option>
+            {% endfor %}
+        </select>
+
+        <select id="price-sort" onchange="sortProducts()" class="Category-Filter">
+            <option value="default">Sort by: Default</option>
+            <option value="low-high">Price: Low to High</option>
+            <option value="high-low">Price: High to Low</option>
+        </select>
+    </div>
+
+    <div id="product-grid" class="product-grid">
+        {% include '_product_list.html' %}
+    </div>
+
+    <div class="no-products" style="display: none; text-align: center; padding: 50px;">
+        <p>រកមិនឃើញផលិតផលដែលអ្នកស្វែងរកឡើយ។</p>
+    </div>
 </section>
 {% endblock %}

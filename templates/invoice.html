@@ -4,102 +4,214 @@
 
 {% block content %}
 <style>
-    /* បន្ថែមស្ទីលសម្រាប់ពេលបោះពុម្ព (Print) ដើម្បីឱ្យរូបភាពច្បាស់ និងមិនបាត់ពណ៌ */
+    /* រចនាបថសម្រាប់វិក្កយបត្រ */
+    .invoice-wrapper {
+        padding: 50px 15px;
+        background: #f8f9fa;
+        min-height: 100vh;
+    }
+    .invoice-card {
+        background: #ffffff;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        border: 1px solid #eee;
+    }
+    .invoice-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        border-bottom: 2px solid #6a0dad;
+        padding-bottom: 20px;
+        margin-bottom: 30px;
+    }
+    .invoice-title h1 {
+        color: #6a0dad;
+        font-weight: 800;
+        margin: 0;
+        font-size: 2.5rem;
+    }
+    .invoice-brand h3 {
+        color: #333;
+        margin: 0;
+    }
+    .invoice-info-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 40px;
+    }
+    .info-label {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        color: #888;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+    .status-badge-invoice {
+        background: #6a0dad;
+        color: white;
+        padding: 5px 15px;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+    .invoice-table {
+        width: 100%;
+        margin-bottom: 30px;
+    }
+    .invoice-table th {
+        background: #fdfaff;
+        color: #6a0dad;
+        padding: 12px;
+        border-bottom: 2px solid #eee;
+    }
+    .invoice-table td {
+        padding: 15px 12px;
+        border-bottom: 1px solid #eee;
+        vertical-align: middle;
+    }
+    .item-img {
+        width: 50px;
+        height: 50px;
+        border-radius: 8px;
+        object-fit: cover;
+        margin-right: 15px;
+        border: 1px solid #eee;
+    }
+    .invoice-summary {
+        display: flex;
+        justify-content: flex-end;
+    }
+    .summary-box {
+        width: 300px;
+    }
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        font-size: 1rem;
+    }
+    .summary-row.total {
+        border-top: 2px solid #6a0dad;
+        margin-top: 10px;
+        font-weight: bold;
+        font-size: 1.25rem;
+        color: #6a0dad;
+    }
+    .btn-print {
+        background: #2f3542;
+        color: white;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 8px;
+        transition: 0.3s;
+        cursor: pointer;
+    }
+    .btn-print:hover {
+        background: #6a0dad;
+        transform: translateY(-2px);
+    }
+    
+    /* សម្រាប់ Print */
     @media print {
-        body * { visibility: hidden; }
-        #invoice-card, #invoice-card * { visibility: visible; }
-        #invoice-card { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none; border: none; }
-        button { display: none !important; } /* លាក់ប៊ូតុង Print ពេលបោះពុម្ព */
+        .btn-print, nav, footer { display: none !important; }
+        .invoice-wrapper { padding: 0; background: white; }
+        .invoice-card { box-shadow: none; border: none; width: 100%; max-width: 100%; }
     }
 </style>
 
-<div style="background: #f4f7f6; padding: 50px 20px; min-height: 100vh; font-family: 'Inter', sans-serif;">
-    <div id="invoice-card" style="max-width: 800px; background: white; margin: 0 auto; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); overflow: hidden; border: 1px solid #eee;">
+<div class="invoice-wrapper">
+    <div class="invoice-card" id="printableInvoice">
         
-        <div style="background: #6a0dad; padding: 40px; color: white; display: flex; justify-content: space-between; align-items: center;">
-            <div>
-                <h1 style="margin: 0; font-size: 2rem; letter-spacing: 1px;">INVOICE</h1>
-                <p style="margin: 5px 0 0; opacity: 0.8;">Order ID: #{{ order.id }}</p>
+        <div class="invoice-header">
+            <div class="invoice-title">
+                <h1>INVOICE</h1>
+                <p class="text-muted">Order ID: #{{ order.id }}</p>
             </div>
-            <div style="text-align: right;">
-                <h3 style="margin: 0;">Darling Skincare</h3>
-                <p style="margin: 5px 0 0; font-size: 0.9rem; opacity: 0.8;">Phnom Penh, Cambodia</p>
-            </div>
-        </div>
-
-        <div style="padding: 40px; display: flex; justify-content: space-between; border-bottom: 2px solid #f9f9f9;">
-            <div>
-                <h4 style="color: #a4b0be; text-transform: uppercase; font-size: 0.8rem; margin-bottom: 10px;">Billed To:</h4>
-                <p style="margin: 0; font-weight: bold; color: #2f3542; font-size: 1.1rem;">{{ order.customer_name }}</p>
-                <p style="margin: 5px 0; color: #57606f;">{{ order.customer_email }}</p>
-            </div>
-            <div style="text-align: right;">
-                <h4 style="color: #a4b0be; text-transform: uppercase; font-size: 0.8rem; margin-bottom: 10px;">Date Issued:</h4>
-                <p style="margin: 0; font-weight: bold; color: #2f3542;">{{ order.order_date }}</p>
-                <p style="margin: 5px 0;">
-                    <span style="background: #e1ffed; color: #27ae60; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase;">
-                        {{ order.status }}
-                    </span>
-                </p>
+            <div class="invoice-brand text-right">
+                <h3>Darling Skincare</h3>
+                <p class="text-muted mb-0">Phnom Penh, Cambodia</p>
+                <small>www.darlingskincare.com</small>
             </div>
         </div>
 
-        <div style="padding: 40px;">
-            <table style="width: 100%; border-collapse: collapse; text-align: left;">
+        <div class="invoice-info-row">
+            <div>
+                <h4 class="info-label">Billed To:</h4>
+                <p class="h5 mb-1"><strong>{{ order.customer_name }}</strong></p>
+                <p class="text-muted mb-1 small">{{ order.customer_email }}</p>
+                {% if order.phone %}<p class="text-muted mb-1 small">Tel: {{ order.phone }}</p>{% endif %}
+                {% if order.address %}<p class="text-muted mb-1 small">Addr: {{ order.address }}</p>{% endif %}
+            </div>
+            <div class="text-right">
+                <h4 class="info-label">Date Issued:</h4>
+                <p class="mb-2"><strong>{{ order.created_at }}</strong></p>
+                <span class="status-badge-invoice">{{ order.status }}</span>
+            </div>
+        </div>
+
+        <div class="invoice-body">
+            <table class="invoice-table">
                 <thead>
-                    <tr style="border-bottom: 2px solid #6a0dad;">
-                        <th style="padding: 15px 0; color: #2f3542;">Item Description</th>
-                        <th style="padding: 15px 0; text-align: center; color: #2f3542;">Price</th>
-                        <th style="padding: 15px 0; text-align: center; color: #2f3542;">Qty</th>
-                        <th style="padding: 15px 0; text-align: right; color: #2f3542;">Total</th>
+                    <tr>
+                        <th>Item Description</th>
+                        <th class="text-center">Price</th>
+                        <th class="text-center">Qty</th>
+                        <th class="text-right">Total</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for item in order_items %}
-                    <tr style="border-bottom: 1px solid #f1f2f6;">
-                        <td style="padding: 20px 0;">
-                            <div style="display: flex; align-items: center; gap: 15px;">
+                    {% set item_price = item.price if item.price is not none else 0 %}
+                    {% set item_qty = item.quantity if item.quantity is not none else 0 %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
                                 <img src="{{ url_for('static', filename='image/products/' + item.image_filename) if item.image_filename else url_for('static', filename='image/default.jpg') }}" 
-                                     style="width: 50px; height: 50px; border-radius: 8px; object-fit: cover; border: 1px solid #eee;">
+                                     class="item-img" alt="Product">
                                 <div>
-                                    <span style="font-weight: 600; color: #2f3542; display: block;">{{ item.product_name }}</span>
-                                    <small style="color: #a4b0be;">Cat: {{ item.category }}</small>
+                                    <div class="font-weight-bold">{{ item.product_name }}</div>
+                                    <small class="text-muted">Category: {{ item.category }}</small>
                                 </div>
                             </div>
                         </td>
-                        <td style="padding: 20px 0; text-align: center; color: #57606f;">${{ "%.2f"|format(item.price) }}</td>
-                        <td style="padding: 20px 0; text-align: center; color: #57606f;">{{ item.quantity }}</td>
-                        <td style="padding: 20px 0; text-align: right; font-weight: bold; color: #2f3542;">${{ "%.2f"|format(item.price * item.quantity) }}</td>
+                        <td class="text-center text-muted">${{ "%.2f"|format(item_price) }}</td>
+                        <td class="text-center text-muted">{{ item_qty }}</td>
+                        <td class="text-right font-weight-bold">${{ "%.2f"|format(item_price * item_qty) }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
 
-        <div style="background: #fcfaff; padding: 40px; display: flex; justify-content: flex-end;">
-            <div style="width: 250px;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                    <span style="color: #57606f;">Subtotal:</span>
-                    <span style="font-weight: bold; color: #2f3542;">${{ "%.2f"|format(order.total_amount) }}</span>
+        <div class="invoice-summary">
+            <div class="summary-box">
+                <div class="summary-row">
+                    <span class="text-muted">Subtotal:</span>
+                    <span>${{ "%.2f"|format(order.total_amount) }}</span>
                 </div>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
-                    <span style="color: #57606f;">Shipping:</span>
-                    <span style="font-weight: bold; color: #2f3542;">$0.00</span>
+                <div class="summary-row">
+                    <span class="text-muted">Shipping:</span>
+                    <span>$0.00</span>
                 </div>
-                <div style="display: flex; justify-content: space-between; border-top: 2px solid #eee; padding-top: 15px;">
-                    <span style="font-size: 1.2rem; font-weight: bold; color: #6a0dad;">Total:</span>
-                    <span style="font-size: 1.2rem; font-weight: bold; color: #6a0dad;">${{ "%.2f"|format(order.total_amount) }}</span>
+                <div class="summary-row total">
+                    <span>Total Amount:</span>
+                    <span>${{ "%.2f"|format(order.total_amount) }}</span>
                 </div>
             </div>
         </div>
 
-        <div style="padding: 30px; text-align: center; background: #fff; border-top: 1px solid #eee;">
-            <p style="color: #a4b0be; font-size: 0.9rem; margin-bottom: 20px;">Thank you for shopping with Darling Skincare!</p>
-            <button onclick="window.print()" style="padding: 12px 30px; background: #6a0dad; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 1rem; transition: 0.3s;" onmouseover="this.style.background='#520b8a'">
-                <i class="fas fa-print"></i> Print Invoice
-            </button>
+        <div class="invoice-footer">
+            <p class="text-muted small">Thank you for shopping with Darling Skincare! If you have any questions, please contact us at 012 345 678.</p>
+            <div class="mt-4">
+                <button onclick="window.print()" class="btn-print">
+                    <i class="fas fa-print mr-2"></i> Print Invoice
+                </button>
+            </div>
         </div>
     </div>
 </div>
-
-{% endblock %} 
+{% endblock %}

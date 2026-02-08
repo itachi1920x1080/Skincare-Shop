@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Admin - User Feedbacks{% endblock %}
+
+{% block content %}
+<section class="admin-container" style="padding: 40px 20px; max-width: 1200px; margin: auto;">
+    <h2 data-aos="fade-down" style="color: #6a0dad; margin-bottom: 30px;">
+        <i class="fas fa-comments"></i> អតិថិជនផ្ដល់មតិយោបល់ (Feedbacks)
+    </h2>
+
+    <div class="table-responsive" data-aos="fade-up">
+        <table style="width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+            <thead>
+                <tr style="background: #6a0dad; color: white; text-align: left;">
+                    <th style="padding: 15px;">កាលបរិច្ឆេទ</th>
+                    <th style="padding: 15px;">ឈ្មោះ</th>
+                    <th style="padding: 15px;">អីមែល</th>
+                    <th style="padding: 15px;">មតិយោបល់ / សំណូមពរ</th>
+                    <th style="padding: 15px;">សកម្មភាព</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for fb in feedbacks %}
+                <tr style="border-bottom: 1px solid #eee; transition: 0.3s;" onmouseover="this.style.background='#fcfaff'" onmouseout="this.style.background='white'">
+                    <td style="padding: 15px; font-size: 13px; color: #888;">{{ fb.created_at }}</td>
+                    <td style="padding: 15px; font-weight: bold;">{{ fb.name }}</td>
+                    <td style="padding: 15px; color: #6a0dad;">{{ fb.email }}</td>
+                    <td style="padding: 15px; max-width: 400px; line-height: 1.5;">{{ fb.message }}</td>
+                    <td style="padding: 15px;">
+                        <button onclick="deleteFeedback({{ fb.id }})" style="color: #ff4757; border: none; background: none; cursor: pointer; font-size: 1.1rem;">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" style="padding: 40px; text-align: center; color: #999;">មិនទាន់មានមតិយោបល់នៅឡើយទេ។</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<script>
+function deleteFeedback(id) {
+    if(confirm('តើអ្នកពិតជាចង់លុបមតិយោបល់នេះមែនទេ?')) {
+        // លោកអ្នកអាចបន្ថែម fetch API នៅទីនេះដើម្បីលុបចេញពី Database
+        console.log("Deleting feedback ID:", id);
+    }
+}
+</script>
+{% endblock %}
